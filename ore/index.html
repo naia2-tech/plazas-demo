@@ -430,7 +430,7 @@ body.nofr .tabbar{padding-bottom:max(10px,env(safe-area-inset-bottom))}
 <script>
 /* ===== helpers ===== */
 const U=(id,w=600)=>`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
-const PH=(src,alt='')=>`<div class="ph"><img src="${src}" alt="${alt}" loading="lazy" onerror="this.remove()"></div>`;
+const PH=(src,alt='')=>`<div class="ph"><img src="${src}" alt="${alt}" decoding="async" onerror="this.remove()"></div>`;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=s=>document.querySelector(s);
 const I={
