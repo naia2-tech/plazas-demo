@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="eu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#E9E1D6">
+<title>ORE · zeramika tailerra · demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* ORE — estudio ficticio. Esencia: calma, barro, letras en mayúscula espaciadas, etiquetas entre paréntesis. */
+:root{
+  --shell:#E9E1D6; --sand:#EFE8DF; --paper:#FAF7F2; --line:#E2D8CC; --ink:#3A2B21; --muted:#8B7A6B;
+  --clay:#B5774F; --clay-soft:#F2E4D8; --sage:#7F8F72; --sage-soft:#E5EADD; --cocoa:#4A3427;
+  --ok:#5E8A5A; --ok-soft:#E3EEDF; --warn:#C27A2C; --warn-soft:#F7E7D3; --gold:#C49A4E;
+  --bezel:#1C1612;
+  --f-d:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --f-b:"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(1200px 600px at 50% -10%,#F4EEE6 0%,var(--shell) 60%) fixed;color:var(--ink);font:15px/1.5 var(--f-b);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+input,textarea{font:inherit;color:inherit}
+img{display:block;max-width:100%}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--clay);outline-offset:2px}
+.ph{background:linear-gradient(135deg,#D9C7B5,#BFA38A)}
+.ph img{width:100%;height:100%;object-fit:cover}
+
+/* ---------- shell ---------- */
+.shell{height:100%;display:flex;flex-direction:column;padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;flex-wrap:wrap}
+.bar .brand{display:flex;align-items:baseline;gap:10px}
+@media (max-width:900px) and (min-width:601px){.bar .seg{order:3;margin:0 auto}}
+.wm{font-family:var(--f-d);font-weight:600;letter-spacing:.32em;text-transform:uppercase}
+.bar .wm{font-size:1.5rem}
+.paren{font-size:.8rem;color:var(--muted);letter-spacing:.02em}
+.seg{display:inline-flex;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px;box-shadow:0 6px 20px -12px rgba(74,52,39,.35)}
+.seg button{display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;font-weight:600;font-size:.88rem;color:var(--muted);white-space:nowrap}
+.seg button svg{width:18px;height:18px}
+.seg button[aria-pressed="true"]{background:var(--cocoa);color:var(--paper)}
+.right{display:flex;align-items:center;gap:12px}
+.lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--paper)}
+.lang button{padding:5px 11px;border-radius:999px;font-size:.75rem;font-weight:700;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.by{font-size:.72rem;color:var(--muted);text-align:right;line-height:1.3}
+.by b{color:var(--ink);font-weight:700;letter-spacing:.04em}
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;gap:36px;padding:0 22px 18px;position:relative}
+.side{width:250px;display:flex;flex-direction:column;gap:14px;flex:none}
+.side h3{font-family:var(--f-d);font-size:1.7rem;font-weight:500;font-style:italic;margin:0;line-height:1.1}
+.tries{display:flex;flex-direction:column;gap:6px}
+.try{display:flex;align-items:center;gap:10px;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.86rem;font-weight:600;transition:transform .15s}
+.try:active{transform:scale(.98)}
+.try i{font-style:normal;width:28px;height:28px;border-radius:9px;background:var(--clay-soft);display:grid;place-items:center;flex:none;font-size:.95rem}
+.sync{font-size:.8rem;color:var(--muted);display:flex;gap:8px;align-items:flex-start;background:var(--sage-soft);border-radius:12px;padding:10px 12px}
+.sync svg{width:18px;height:18px;flex:none;color:var(--sage);margin-top:1px}
+.points{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;list-style:none}
+.points li{font-size:.88rem;display:grid;grid-template-columns:auto 1fr;gap:10px}
+.points li b{display:block;font-weight:700}
+.points li span{color:var(--muted)}
+.points .n{font-family:var(--f-d);font-size:1.3rem;font-style:italic;color:var(--clay);line-height:1}
+.foot{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:.68rem;color:var(--muted)}
+.fitwrap{position:relative;flex:none}
+.device{position:absolute;top:0;left:0;transform-origin:0 0;background:var(--bezel);box-shadow:0 40px 80px -30px rgba(40,25,15,.55),inset 0 0 0 1.5px #3a302a}
+.phone{border-radius:58px;padding:12px}
+.phone .screen{width:390px;height:844px;border-radius:46px}
+.island{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:118px;height:34px;border-radius:20px;background:#000;z-index:30}
+.tablet{border-radius:38px;padding:20px}
+.tablet .screen{border-radius:20px}
+.cam{position:absolute;width:8px;height:8px;border-radius:50%;background:#2c2622;top:6px;left:50%;transform:translateX(-50%)}
+.screen{background:var(--paper);overflow:hidden;position:relative;display:flex;flex-direction:column}
+@media (max-width:1060px){.side.right-col{display:none}}
+@media (max-width:820px){.side{display:none}}
+@media (max-width:600px){.seg button span.l{display:none}}
+
+/* no frames on phone-sized viewports */
+body.nofr{overflow:auto}
+body.nofr .stage{padding:0;display:block}
+body.nofr .fitwrap{width:100%!important;height:auto!important}
+body.nofr .device{position:relative;transform:none!important;background:none;box-shadow:none;padding:0;border-radius:0}
+body.nofr .island,body.nofr .cam{display:none}
+body.nofr .phone .screen{width:100%;height:calc(100dvh - var(--hh,64px));border-radius:0}
+body.nofr .tablet .screen{width:100%!important;height:auto!important;min-height:calc(100dvh - var(--hh,64px));border-radius:0}
+body.nofr .foot{display:none}
+
+/* ---------- student app ---------- */
+.sbar{height:54px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px 36px;font-weight:700;font-size:.82rem}
+body.nofr .sbar{display:none}
+.sbar .sig{display:flex;gap:5px;align-items:center}
+.sbar .sig i{display:inline-block;width:22px;height:11px;border:1.5px solid currentColor;border-radius:3px;position:relative}
+.sbar .sig i::after{content:"";position:absolute;inset:1.5px;right:5px;background:currentColor;border-radius:1px}
+.abody{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.abody::-webkit-scrollbar{display:none}
+.pad{padding:6px 20px 24px;display:flex;flex-direction:column;gap:14px}
+.atop{display:flex;justify-content:space-between;align-items:center;padding:6px 20px 0}
+.atop .wm{font-size:1.15rem}
+.ibtn{width:40px;height:40px;border-radius:14px;background:var(--sand);display:grid;place-items:center;position:relative}
+.ibtn svg{width:21px;height:21px}
+.ibtn .dot{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;border-radius:9px;background:var(--clay);color:#fff;font:700 .66rem/18px var(--f-b);font-style:normal;text-align:center;padding:0 4px}
+.hello h1,.h1{font-family:var(--f-d);font-weight:500;font-size:2.15rem;line-height:1.05;margin:2px 0 0;letter-spacing:-.01em}
+.h1 em,.hello h1 em{color:var(--clay)}
+.card{background:var(--sand);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.card.dark{background:var(--cocoa);color:var(--paper)}
+.card.dark .paren,.card.dark .muted{color:#D8C6B6}
+.muted{color:var(--muted)}
+.lbl{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.card.dark .lbl{color:#CDB8A6}
+.big{font-family:var(--f-d);font-size:1.6rem;line-height:1.1;font-weight:500}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row>*{min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:16px;padding:13px 16px;font-weight:700;font-size:.9rem;background:var(--ink);color:var(--paper);transition:transform .12s}
+.btn:active{transform:scale(.97)}
+.btn.light{background:var(--paper);color:var(--ink)}
+.btn.clay{background:var(--clay);color:#fff}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px currentColor}
+.btn.sm{padding:8px 12px;font-size:.8rem;border-radius:12px}
+.btn svg{width:18px;height:18px}
+.btns{display:flex;gap:8px}
+.btns .btn{flex:1}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;padding:5px 9px;border-radius:999px;white-space:nowrap;background:var(--paper);color:var(--ink)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.clay{background:var(--clay-soft);color:var(--clay)} .chip.sage{background:var(--sage-soft);color:var(--sage)} .chip.gold{background:#F4E9D3;color:#9A7430}
+.ready{display:flex;align-items:center;gap:12px;background:var(--ok-soft);border-radius:22px;padding:10px;text-align:left;width:100%;position:relative;overflow:hidden}
+.ready .ph{width:62px;height:62px;border-radius:16px;overflow:hidden;flex:none}
+.ready b{display:block;color:var(--ok);font-size:.95rem}
+.ready small{display:block;color:var(--ink);font-size:.8rem}
+.ready .grow{flex:1;min-width:0}
+.ready svg{width:20px;height:20px;color:var(--ok)}
+.shine::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%);animation:shine 2.8s ease-in-out infinite}
+@keyframes shine{60%,100%{transform:translateX(100%)}}
+.kiln .temp{font-family:var(--f-d);font-size:2rem;line-height:1}
+.flame{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(160deg,#F3B26B,#C95F2E);color:#fff;animation:glow 2s ease-in-out infinite}
+.flame svg{width:20px;height:20px}
+@keyframes glow{50%{box-shadow:0 0 0 7px rgba(214,124,60,.18)}}
+.prog{height:7px;border-radius:4px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#E9A25F,#C95F2E);transition:width .4s}
+.note{display:flex;gap:12px;align-items:flex-start}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;flex:none;background:var(--clay-soft);color:var(--clay)}
+.av.s{width:30px;height:30px;font-size:.72rem}
+.av.m{background:var(--cocoa);color:var(--paper)}
+.ptile{display:flex;gap:12px;align-items:center;background:var(--sand);border-radius:20px;padding:10px;text-align:left;width:100%}
+.ptile .ph{width:70px;height:70px;border-radius:15px;overflow:hidden;flex:none}
+.ptile .grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ptile b{font-size:.95rem}
+.dots{display:flex;gap:4px}
+.dots i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.dots i.on{background:var(--clay)}
+.dots i.ok{background:var(--ok)}
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:0 20px}
+.filters button{flex:none;padding:8px 13px;border-radius:999px;border:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--muted);background:var(--paper)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.sw{width:16px;height:16px;border-radius:50%;display:inline-block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);vertical-align:-3px}
+/* piece detail */
+.hero{position:relative;height:330px;flex:none}
+.hero .ph{position:absolute;inset:0}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.25),transparent 30%,transparent 60%,rgba(30,20,12,.55))}
+.hero .back{position:absolute;top:10px;left:16px;z-index:2;width:40px;height:40px;border-radius:14px;background:rgba(250,247,242,.9);display:grid;place-items:center}
+.hero .back svg{width:20px;height:20px}
+.hero .cap{position:absolute;left:20px;right:20px;bottom:16px;z-index:2;color:#fff}
+.hero .cap .h1{color:#fff}
+.tl{display:flex;flex-direction:column;gap:0;padding-left:6px}
+.tl .st{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:start;position:relative;padding-bottom:16px}
+.tl .st::before{content:"";position:absolute;left:10px;top:20px;bottom:0;width:2px;background:var(--line)}
+.tl .st:last-child::before{display:none}
+.tl .st.done::before{background:var(--clay)}
+.tl .b{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--paper);display:grid;place-items:center;z-index:1}
+.tl .st.done .b{background:var(--clay);border-color:var(--clay);color:#fff}
+.tl .st.now .b{border-color:var(--clay);box-shadow:0 0 0 5px var(--clay-soft)}
+.tl .b svg{width:12px;height:12px}
+.tl .t b{display:block;font-size:.9rem}
+.tl .t small{color:var(--muted);font-size:.78rem}
+.tl .d{font-size:.75rem;color:var(--muted);white-space:nowrap}
+.glazes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.gz{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:16px;border:1.5px solid transparent;font-size:.72rem;font-weight:600;text-align:center}
+.gz i{width:44px;height:44px;border-radius:50%;box-shadow:inset 0 -6px 10px rgba(0,0,0,.18),inset 0 4px 8px rgba(255,255,255,.35)}
+.gz[aria-pressed="true"]{border-color:var(--ink);background:var(--paper)}
+/* community */
+.post{background:var(--paper);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+.post .hd{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.post .hd b{font-size:.88rem;display:block}
+.post .hd small{font-size:.74rem;color:var(--muted)}
+.post .img{aspect-ratio:1/1;position:relative}
+.post .img .ph{position:absolute;inset:0}
+.post .badge{position:absolute;top:10px;left:10px;z-index:2}
+.post .bd{padding:10px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.post .txt{font-size:.9rem}
+.reacts{display:flex;gap:6px;flex-wrap:wrap}
+.re{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;border-radius:999px;background:var(--sand);font-size:.85rem;font-weight:700;transition:transform .15s}
+.re small{font-size:.75rem;color:var(--muted);font-weight:700}
+.re[aria-pressed="true"]{background:var(--clay-soft);box-shadow:inset 0 0 0 1.5px var(--clay)}
+.re[aria-pressed="true"] small{color:var(--clay)}
+.re.pop{animation:pop .35s ease}
+@keyframes pop{40%{transform:scale(1.25)}}
+.cmts{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.cm{display:flex;gap:8px;font-size:.84rem;align-items:flex-start}
+.cm b{font-weight:700}
+.cm .bub{background:var(--sand);border-radius:4px 14px 14px 14px;padding:7px 10px}
+.quick{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.quick button{flex:none;font-size:.76rem;font-weight:600;padding:7px 10px;border-radius:999px;border:1px dashed var(--clay);color:var(--clay)}
+.cin{display:flex;gap:8px}
+.cin input{flex:1;min-width:0;border:1px solid var(--line);background:var(--sand);border-radius:14px;padding:10px 12px;font-size:.85rem}
+.cin button{width:42px;border-radius:14px;background:var(--ink);color:var(--paper);display:grid;place-items:center}
+.cin button svg{width:18px;height:18px}
+.upl{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--clay);border-radius:22px;padding:14px;background:var(--clay-soft);cursor:pointer}
+.upl i{font-style:normal;width:44px;height:44px;border-radius:14px;background:var(--clay);color:#fff;display:grid;place-items:center;flex:none}
+.upl i svg{width:22px;height:22px}
+.upl b{display:block;font-size:.92rem}
+.upl small{font-size:.78rem;color:var(--muted)}
+.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .dw{font-size:.66rem;font-weight:700;color:var(--muted);padding:4px 0}
+.cal .dd{aspect-ratio:1/1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.82rem;font-weight:600;position:relative}
+.cal .dd.today{background:var(--ink);color:var(--paper)}
+.cal .dd .m{display:flex;gap:2px;position:absolute;bottom:5px}
+.cal .dd .m i{width:5px;height:5px;border-radius:50%}
+.cal .dd.past{color:#bdb0a3}
+.ws{display:flex;gap:12px;align-items:center;background:var(--sand);border-radius:20px;padding:10px}
+.ws .date{width:54px;height:58px;border-radius:14px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:none}
+.ws .date b{font-family:var(--f-d);font-size:1.5rem;line-height:1}
+.ws .date small{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ws .grow{flex:1;min-width:0}
+.ws .grow b{display:block;font-size:.9rem}
+.ws .grow small{font-size:.76rem;color:var(--muted)}
+.seats{display:flex;gap:3px;margin-top:5px}
+.seats i{width:9px;height:9px;border-radius:50%;background:var(--clay)}
+.seats i.free{background:transparent;box-shadow:inset 0 0 0 1.5px var(--clay)}
+.gift{background:linear-gradient(135deg,var(--cocoa),#6B4A36);color:var(--paper);border-radius:24px;padding:18px;display:flex;gap:14px;align-items:center;text-align:left;width:100%;position:relative;overflow:hidden}
+.gift b{font-family:var(--f-d);font-size:1.45rem;font-weight:500;display:block;line-height:1.1}
+.gift small{color:#D8C6B6;font-size:.8rem}
+.gift .bow{font-size:2rem}
+/* profile */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--sand);border-radius:18px;padding:12px 8px;text-align:center}
+.stat b{font-family:var(--f-d);font-size:1.8rem;line-height:1;display:block}
+.stat small{font-size:.7rem;color:var(--muted);font-weight:600}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font-size:.66rem;font-weight:600;line-height:1.2}
+.bdg i{font-style:normal;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;background:radial-gradient(circle at 35% 30%,#fff,var(--clay-soft) 60%);box-shadow:inset 0 0 0 2px #E7CBB4}
+.bdg.lock{opacity:.4;filter:grayscale(1)}
+.set{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.set:last-child{border:0}
+.tg{width:46px;height:28px;border-radius:14px;background:var(--line);position:relative;transition:.2s;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tg[aria-pressed="true"]{background:var(--ok)}
+.tg[aria-pressed="true"]::after{left:21px}
+/* tabbar */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 28px;background:rgba(250,247,242,.96);border-top:1px solid var(--line)}
+body.nofr .tabbar{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.tabbar button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.66rem;font-weight:700;color:#A99888;padding:4px 0;position:relative}
+.tabbar svg{width:24px;height:24px}
+.tabbar button[aria-selected="true"]{color:var(--ink)}
+.tabbar button[aria-selected="true"]::before{content:"";position:absolute;top:-9px;width:22px;height:3px;border-radius:2px;background:var(--clay)}
+.tabbar .nb{position:absolute;top:0;right:calc(50% - 20px);width:8px;height:8px;border-radius:50%;background:var(--clay)}
+/* sheets + toast */
+.scrim{position:absolute;inset:0;background:rgba(40,28,20,.35);z-index:40;animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;z-index:41;background:var(--paper);border-radius:28px 28px 0 0;padding:10px 20px 34px;max-height:88%;overflow-y:auto;display:flex;flex-direction:column;gap:14px;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line);align-self:center}
+.sheet h2{font-family:var(--f-d);font-weight:500;font-size:1.7rem;margin:0;line-height:1.1}
+@keyframes up{from{transform:translateY(100%)}}
+@keyframes fade{from{opacity:0}}
+.opt{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:16px;padding:13px 14px;text-align:left;width:100%;font-weight:600;font-size:.9rem}
+.opt small{display:block;font-weight:500;color:var(--muted);font-size:.78rem}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--sand)}
+.opt[disabled]{opacity:.45}
+.field{display:flex;flex-direction:column;gap:6px;font-size:.78rem;font-weight:700;color:var(--muted)}
+.field input,.field textarea{border:1px solid var(--line);background:var(--sand);border-radius:14px;padding:11px 12px;font-size:.92rem;font-weight:500;color:var(--ink);resize:none}
+.gcard{border-radius:22px;padding:20px;background:linear-gradient(140deg,#F2E4D8,#E4CDB9);display:flex;flex-direction:column;gap:6px;position:relative;overflow:hidden}
+.gcard .wm{font-size:1rem}
+.gcard .big{font-size:1.9rem}
+.gcard::after{content:"";position:absolute;right:-30px;bottom:-30px;width:130px;height:130px;border-radius:50%;border:16px solid rgba(181,119,79,.18)}
+.nt{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:.86rem}
+.nt:last-child{border:0}
+.nt .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;font-size:1rem;background:var(--sand)}
+.nt small{display:block;color:var(--muted);font-size:.74rem}
+.toast{position:absolute;left:16px;right:16px;bottom:104px;z-index:60;background:var(--ink);color:var(--paper);border-radius:18px;padding:12px 14px;font-size:.86rem;font-weight:600;display:flex;gap:10px;align-items:center;transform:translateY(16px);opacity:0;transition:.25s;pointer-events:none}
+.toast.show{transform:none;opacity:1}
+.tablet .toast{left:auto;right:24px;bottom:24px;width:360px}
+.confetti{position:absolute;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:8px;height:12px;border-radius:2px;animation:fall 1.6s cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes fall{to{transform:translateY(900px) rotate(540deg);opacity:.2}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- admin panel ---------- */
+.adm{display:flex;height:100%;width:100%;container-type:inline-size;background:var(--paper)}
+.side-nav{width:220px;flex:none;background:var(--sand);display:flex;flex-direction:column;gap:4px;padding:22px 14px;border-right:1px solid var(--line)}
+.side-nav .wm{font-size:1.35rem;padding:0 10px 14px}
+.side-nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;font-weight:600;font-size:.88rem;color:var(--muted);text-align:left;position:relative}
+.side-nav button svg{width:20px;height:20px;flex:none}
+.side-nav button[aria-selected="true"]{background:var(--paper);color:var(--ink);box-shadow:0 4px 14px -8px rgba(74,52,39,.3)}
+.side-nav .cnt{margin-left:auto;font-size:.68rem;background:var(--clay);color:#fff;border-radius:9px;padding:1px 7px}
+.side-nav .me{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px;font-size:.82rem}
+.side-nav .me small{display:block;color:var(--muted);font-size:.72rem}
+.amain{flex:1;min-width:0;overflow-y:auto;padding:26px 30px 30px;display:flex;flex-direction:column;gap:20px;position:relative;scrollbar-width:thin}
+.ahead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.ahead .h1{font-size:2.4rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--sand);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:4px}
+.kpi b{font-family:var(--f-d);font-size:2.3rem;line-height:1;font-weight:500}
+.kpi b small{font-family:var(--f-b);font-size:.85rem;color:var(--muted);font-weight:600}
+.kpi span{font-size:.8rem;color:var(--muted);font-weight:600}
+.kpi.warn{background:var(--warn-soft)} .kpi.ok{background:var(--ok-soft)}
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start}
+.cols3{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel h3{margin:0;font-size:.95rem;font-weight:700}
+.li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.87rem}
+.li:last-child{border:0}
+.li .grow{flex:1;min-width:0}
+.ck{width:28px;height:28px;border-radius:9px;box-shadow:inset 0 0 0 1.5px var(--line);display:grid;place-items:center;color:transparent;flex:none;background:var(--paper)}
+.ck svg{width:15px;height:15px}
+.ck[aria-pressed="true"]{background:var(--ok);color:#fff;box-shadow:none}
+.feed .li{align-items:flex-start}
+.feed .li small{display:block;color:var(--muted);font-size:.74rem}
+.fi{width:32px;height:32px;border-radius:10px;background:var(--sand);display:grid;place-items:center;flex:none;font-size:.95rem}
+.kan{display:grid;grid-template-columns:repeat(5,minmax(160px,1fr));gap:12px;overflow-x:auto;padding-bottom:6px;align-items:start}
+.kcol{background:var(--sand);border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:8px;min-height:320px}
+.kcol .kh{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;font-size:.78rem;font-weight:700}
+.kcol .kh small{color:var(--muted);font-weight:600}
+.kc{background:var(--paper);border-radius:14px;padding:8px;display:flex;gap:8px;align-items:center;text-align:left;width:100%;border:1.5px solid transparent;transition:transform .12s}
+.kc:active{transform:scale(.98)}
+.kc[aria-pressed="true"]{border-color:var(--clay);background:#FFF9F4}
+.kc .ph{width:44px;height:44px;border-radius:10px;overflow:hidden;flex:none}
+.kc .grow{flex:1;min-width:0}
+.kc b{display:block;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kc small{display:block;font-size:.72rem;line-height:1.35;color:var(--muted)}
+.kc small .sw{vertical-align:-1px;margin-left:2px}
+.actionbar .btn{white-space:nowrap}
+.actionbar{position:sticky;bottom:0;display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--ink);color:var(--paper);border-radius:18px;padding:10px 12px 10px 16px;font-size:.86rem;font-weight:600;box-shadow:0 14px 30px -14px rgba(0,0,0,.5);animation:up .25s}
+.kilnv{background:linear-gradient(180deg,#3B2C23,#2A1F19);border-radius:24px;padding:18px;color:var(--paper);display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.kilnv.on{box-shadow:inset 0 0 60px rgba(233,140,70,.35)}
+.kilnv.on::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at 50% 110%,rgba(240,140,60,.45),transparent 70%);animation:breathe 2.5s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.55}}
+.shelf{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:8px;border-radius:12px;background:rgba(255,255,255,.06);border-bottom:4px solid #6b5546}
+.slot{aspect-ratio:1/1;border-radius:50%;background:rgba(255,255,255,.07);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.slot .ph{width:100%;height:100%}
+.kilnv .temp{font-family:var(--f-d);font-size:3rem;line-height:1;position:relative;z-index:1}
+.kilnv .row{position:relative;z-index:1}
+.typeseg{display:inline-flex;background:var(--sand);border-radius:14px;padding:4px;gap:4px}
+.typeseg button{padding:8px 12px;border-radius:10px;font-size:.82rem;font-weight:700;color:var(--muted)}
+.typeseg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:0 2px 8px -4px rgba(0,0,0,.2)}
+.groups{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.grp{background:var(--sand);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.grp b{font-size:.9rem}
+.grp .sd{display:flex;gap:5px;flex-wrap:wrap}
+.grp .sd i{width:22px;height:22px;border-radius:50%;background:var(--clay);display:grid;place-items:center;color:#fff;font-size:.6rem;font-style:normal;font-weight:700}
+.grp .sd i.free{background:transparent;box-shadow:inset 0 0 0 1.5px var(--clay)}
+.grp .sd i.rec{background:var(--sage)}
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border:0}
+.tbl .n{font-variant-numeric:tabular-nums}
+.meter{display:flex;align-items:center;gap:8px}
+.meter .prog{flex:1;min-width:50px}
+.prog.sage i{background:var(--sage)}
+.bars{display:flex;gap:18px;align-items:flex-end;height:150px;padding-top:10px}
+.bars .bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bars .bc i{width:100%;max-width:64px;border-radius:12px 12px 4px 4px;background:var(--clay-soft)}
+.bars .bc.cur i{background:var(--clay)}
+.bars .bc b{font-size:.8rem;font-variant-numeric:tabular-nums}
+.bars .bc small{font-size:.72rem;color:var(--muted)}
+.wslist .ws{background:var(--sand)}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.addrow .field{flex:1;min-width:110px}
+.igpost{aspect-ratio:1/1;width:100%;max-width:400px;border-radius:6px;background:#EFE6DB;padding:26px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;box-shadow:0 20px 40px -20px rgba(0,0,0,.35)}
+.igpost .wm{font-size:.9rem}
+.igpost .t{font-family:var(--f-d);font-style:italic;font-size:2.3rem;line-height:1}
+.igpost .gl{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;font-size:.84rem;margin-top:4px}
+.igpost .gl b{font-family:var(--f-d);font-size:1.15rem;font-weight:600}
+.igpost .ft{margin-top:auto;font-size:.72rem;color:var(--muted)}
+.igpost::after{content:"";position:absolute;right:-50px;top:-50px;width:160px;height:160px;border-radius:50%;background:var(--clay-soft)}
+.modal{position:absolute;inset:0;z-index:50;display:grid;place-items:center;background:rgba(40,28,20,.35);animation:fade .2s;padding:20px}
+.modal .box{background:var(--paper);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:14px;max-width:760px;width:100%;max-height:100%;overflow:auto}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cpost{background:var(--sand);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.cpost .ph{aspect-ratio:4/3;position:relative}
+.cpost .ph .chip{position:absolute;top:8px;left:8px}
+.cpost .bd{padding:10px 12px;display:flex;flex-direction:column;gap:8px;font-size:.82rem}
+.cpost .rx{display:flex;gap:8px;font-size:.78rem;color:var(--muted);font-weight:700}
+@container (max-width:980px){
+  .side-nav{width:76px;padding:18px 10px;align-items:center}
+  .side-nav .wm{font-size:.9rem;letter-spacing:.2em;padding:0 0 10px}
+  .side-nav button{justify-content:center;padding:12px}
+  .side-nav button span,.side-nav .me div{display:none}
+  .side-nav .cnt{position:absolute;top:4px;right:4px;margin:0}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .cols,.cols3{grid-template-columns:1fr}
+  .groups{grid-template-columns:repeat(2,1fr)}
+  .cgrid{grid-template-columns:repeat(2,1fr)}
+  .amain{padding:20px}
+}
+@container (max-width:560px){
+  .side-nav{position:fixed;left:0;right:0;bottom:0;width:auto;height:auto;flex-direction:row;justify-content:space-around;padding:6px 6px max(8px,env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);z-index:20}
+  .side-nav .wm,.side-nav .me{display:none}
+  .amain{padding:16px 16px 90px}
+  .kan{grid-template-columns:repeat(5,170px)}
+  .cgrid,.groups{grid-template-columns:1fr}
+  .tbl .hide-s{display:none}
+  .cols3{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="bar" id="bar">
+    <div class="brand"><span class="wm">ORE</span><span class="paren" id="t-sub"></span></div>
+    <div class="seg" role="group" aria-label="Bista">
+      <button id="v-app" data-view="app" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/></svg><span class="l" id="t-vapp"></span></button>
+      <button id="v-adm" data-view="admin" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="4" width="19" height="14" rx="2.5"/><path d="M9 21h6M12 18v3"/></svg><span class="l" id="t-vadm"></span></button>
+    </div>
+    <div class="right">
+      <div class="lang" role="group" aria-label="Hizkuntza"><button id="lg-eu" data-lang="eu" aria-pressed="true">EUS</button><button id="lg-es" data-lang="es" aria-pressed="false">CAS</button></div>
+      <div class="by"><span id="t-by"></span><br><b>ONDORA STUDIO</b></div>
+    </div>
+  </header>
+  <main class="stage" id="stage">
+    <aside class="side" id="side-l"></aside>
+    <div class="fitwrap" id="fit"><div class="device" id="device"></div></div>
+    <aside class="side right-col" id="side-r"></aside>
+    <div class="foot" id="t-foot"></div>
+  </main>
+</div>
+<input type="file" accept="image/*" id="up-post" class="vh">
+<input type="file" accept="image/*" id="up-piece" class="vh">
+
+<script>
+/* ===== helpers ===== */
+const U=(id,w=600)=>`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+const PH=(src,alt='')=>`<div class="ph"><img src="${src}" alt="${alt}" loading="lazy" onerror="this.remove()"></div>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+const I={
+home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z"/></svg>',
+bowl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3.5 10h17a8.5 8.5 0 0 1-17 0z"/><path d="M9 4.5c0 1.3 1 1.3 1 2.6M13 4.5c0 1.3 1 1.3 1 2.6"/></svg>',
+heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/></svg>',
+cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1-4 4-5.5 7.5-5.5s6.5 1.5 7.5 5.5"/></svg>',
+bell:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l1.5-2.5h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 5 7.5 12l7 7"/></svg>',
+chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9.5 5 7 7-7 7"/></svg>',
+check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+flame:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c.5 3-2.5 4.5-2.5 8a2.5 2.5 0 0 0 5 0c0-1 .3-1.8 1-2.5 1.5 1.6 3 3.8 3 6.5a6.5 6.5 0 0 1-13 0c0-5 4.5-7.5 6.5-12z"/></svg>',
+send:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 12 20 4l-5 16-3.5-6.5z"/></svg>',
+plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+grid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>',
+kiln:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="M4 9h16M8 14h8"/><circle cx="16.5" cy="6.2" r=".9" fill="currentColor"/></svg>',
+users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="3.3"/><circle cx="17" cy="10" r="2.6"/><path d="M3 19.5c.6-3 3-4.8 6-4.8s5.4 1.8 6 4.8M15.5 15c2.6 0 4.6 1.4 5.2 4"/></svg>',
+euro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17.5 6.5A6.5 6.5 0 1 0 17.5 17.5M4.5 10.5h9M4.5 13.5h9"/></svg>',
+spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>',
+link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>'
+};
+let L=(e,s)=>S.lang==='eu'?e:s;
+
+/* ===== demo data (all invented) ===== */
+const STG={eu:['Lehortzen','Bizkotxoa','Esmaltatuta','Labean','Prest','Jasota'],es:['Secando','Bizcocho','Esmaltada','En el horno','Lista','Recogida']};
+const GL=[
+ {id:'ilargi',c:'#ECE6DA',eu:'Ilargi zuria',es:'Blanco luna'},
+ {id:'ozeano',c:'#3F6D8C',eu:'Ozeano urdina',es:'Azul océano'},
+ {id:'iratze',c:'#7E9A73',eu:'Iratze berdea',es:'Verde helecho'},
+ {id:'lur',c:'#A5583A',eu:'Lur gorria',es:'Rojo tierra'},
+ {id:'ezti',c:'#CF9E4A',eu:'Ezti horia',es:'Miel'},
+ {id:'gau',c:'#2C2724',eu:'Gau beltza',es:'Negro noche'}];
+const gl=id=>GL.find(g=>g.id===id);
+const GROUPS=[
+ {id:'a1',eu:'Asteartea 10:30',es:'Martes 10:30',kids:false},
+ {id:'a2',eu:'Asteartea 17:30',es:'Martes 17:30',kids:false},
+ {id:'o1',eu:'Osteguna 10:30',es:'Jueves 10:30',kids:false},
+ {id:'o2',eu:'Haurrak · osteguna 17:30',es:'Peques · jueves 17:30',kids:true}];
+const STUD=[
+ ['ane','Ane','a2',96,'paid'],['maialen','Maialen','a2',88,'paid'],['irati','Irati','a2',92,'paid'],['edurne','Edurne','a2',75,'pending'],['saioa','Saioa','a2',100,'paid'],
+ ['josune','Josune','a1',94,'paid'],['maite','Maite','a1',100,'paid'],['itziar','Itziar','a1',81,'paid'],['olatz','Olatz','a1',88,'paid'],['nekane','Nekane','a1',94,'paid'],['ainhoa','Ainhoa','a1',69,'paid'],
+ ['garazi','Garazi','o1',100,'paid'],['uxue','Uxue','o1',88,'paid'],['leire','Leire','o1',94,'paid'],['amaia','Amaia','o1',81,'paid'],['lorea','Lorea','o1',90,'paid'],
+ ['unai','Unai','o2',100,'paid'],['nora','Nora','o2',94,'paid'],['aimar','Aimar','o2',88,'paid'],['june','June','o2',100,'paid'],['oier','Oier','o2',81,'paid']
+].map(([id,name,g,att,fee])=>({id,name,g,att,fee}));
+const sname=id=>id==='maddi'?'Maddi':(STUD.find(s=>s.id===id)||{name:id}).name;
+const sgroup=id=>{const s=STUD.find(x=>x.id===id);return s?GROUPS.find(g=>g.id===s.g)[S.lang]:L('Tailerra','Taller')};
+
+const S={
+ lang:'eu',view:'app',tab:'home',detail:null,pf:'all',sheet:null,sheetData:{},
+ atab:'today',sel:new Set(),modal:null,
+ ane:{freed:false,rec:null},
+ att:{},
+ notifs:[
+  {ic:'🏺',eu:'Zure katilua prest dago · B apala, 3. kutxa',es:'Tu cuenco está listo · estante B, caja 3',t:'09:12',read:false},
+  {ic:'🤎',eu:'Maialenek 🤎 eman dio zure loreontziari',es:'A Maialen le ha encantado tu jarrón 🤎',t:'atzo',read:false},
+  {ic:'✨',eu:'Maddi: ostegunean esmalte berriak iritsiko dira',es:'Maddi: el jueves llegan esmaltes nuevos',t:'astelehena',read:true}],
+ pieces:[
+  {id:1,o:'ane',eu:'Katilua',es:'Cuenco',img:'1510035618584-c442b241abe7',st:4,g:'ilargi',shelf:'B · 3'},
+  {id:2,o:'ane',eu:'Loreontzia',es:'Jarrón',img:'1520408222757-6f9f95d87d5d',st:3,g:'iratze'},
+  {id:3,o:'ane',eu:'Kafe-kikara',es:'Taza de café',img:'1610206349499-c932c3b3aacb',st:1,g:null},
+  {id:4,o:'ane',eu:'Platertxoa',es:'Platito',img:'1587560555570-4d3f84dcee05',st:0,g:null},
+  {id:5,o:'ane',eu:'Kandelontzia',es:'Portavelas',img:'1622947344865-a7fcf40e88e7',st:5,g:'gau'},
+  {id:6,o:'maialen',eu:'Pitxerra',es:'Jarra',img:'1590605095243-072811dbe64c',st:1,g:null},
+  {id:7,o:'irati',eu:'Kikara',es:'Taza',img:'1597696929644-a2157a251a43',st:2,g:'ozeano'},
+  {id:8,o:'garazi',eu:'Katilua',es:'Cuenco',img:'1607556671927-78a6605e290b',st:0,g:null,ws:true},
+  {id:9,o:'uxue',eu:'Katilu beltza',es:'Cuenco negro',img:'1609054691436-fc8d64bf9a62',st:3,g:'gau'},
+  {id:10,o:'josune',eu:'Platera',es:'Plato',img:'1567763745030-bfe9c51bec27',st:3,g:'ezti'},
+  {id:11,o:'leire',eu:'Loreontzi luzea',es:'Jarrón alto',img:'1493106641515-6b5631de4bb9',st:0,g:null},
+  {id:12,o:'amaia',eu:'Bitxi-ontzia',es:'Joyero',img:'1530006498959-b7884e829a04',st:2,g:'lur',ws:true},
+  {id:13,o:'maite',eu:'Katilu sorta',es:'Juego de cuencos',img:'1577576223085-3eb295cd414f',st:4,g:'ilargi',shelf:'A · 1'},
+  {id:14,o:'nora',eu:'Ontzi txikia',es:'Cuenquito',img:'1610128361323-6e941c97f023',st:1,g:null},
+  {id:15,o:'edurne',eu:'Ontzi zuria',es:'Bote blanco',img:'1572725350945-a2d24faa89b0',st:3,g:'ilargi'},
+  {id:16,o:'itziar',eu:'Katiluak',es:'Cuencos',img:'1525973779373-015bdf68e579',st:1,g:null},
+  {id:17,o:'olatz',eu:'Gozo-ontzia',es:'Bol de postre',img:'1523367310297-83064fc42a16',st:0,g:null},
+  {id:18,o:'saioa',eu:'Pitxer txikia',es:'Jarrita',img:'1519916478825-b1d7aef08f54',st:4,g:'ilargi',shelf:'A · 4'}],
+ posts:[
+  {id:1,a:'maite',img:U('1577576223085-3eb295cd414f',700),txt:'Nire lehen katilu sorta! Ilargi zuriarekin 🤍',t:'2 h',star:true,r:{'🤎':14,'✨':6,'👏':4,'😍':3,'🔥':0},mine:new Set(),c:[['irati','Zoragarriak dira 😍'],['maddi','Esmaltea primeran geratu da, Maite!'],['josune','Bat oparitzeko? 😇']]},
+  {id:2,a:'garazi',img:U('1764507768733-667e135d8cb9',700),txt:'Tornuan lehen aldiz… ez da batere erraza 😅',t:'5 h',first:true,r:{'🤎':6,'✨':2,'👏':11,'😍':0,'🔥':4},mine:new Set(),c:[['leire','Hasieran denok horrela! Ondo doa 💪'],['maddi','Hurrengoan zentratzen landuko dugu 🙌']]},
+  {id:3,a:'irati',img:U('1597696929644-a2157a251a43',700),txt:'Kikara hauek amonarentzat dira. Ostiralean oparituko dizkiot.',t:'atzo',r:{'🤎':9,'✨':3,'👏':2,'😍':5,'🔥':0},mine:new Set(),c:[['saioa','Ze polita! Amona pozik egongo da']]},
+  {id:4,a:'saioa',img:U('1519916478825-b1d7aef08f54',700),txt:'Pitxer txikia, labetik atera berria. ¿Qué os parece el blanco luna?',t:'2 egun',r:{'🤎':7,'✨':5,'👏':1,'😍':2,'🔥':1},mine:new Set(),c:[]}],
+ workshops:[
+  {id:1,d:16,dw:{eu:'Or',es:'Vie'},h:'18:00',eu:'Sortu zure pieza',es:'Crea tu pieza',cap:6,b:4,p:65},
+  {id:2,d:17,dw:{eu:'Lr',es:'Sáb'},h:'10:30',eu:'Sortu zure pieza',es:'Crea tu pieza',cap:6,b:6,p:65},
+  {id:3,d:23,dw:{eu:'Or',es:'Vie'},h:'18:00',eu:'Sortu zure pieza',es:'Crea tu pieza',cap:6,b:2,p:65},
+  {id:4,d:24,dw:{eu:'Lr',es:'Sáb'},h:'10:30',eu:'Sortu zure pieza',es:'Crea tu pieza',cap:6,b:5,p:65},
+  {id:5,d:30,dw:{eu:'Or',es:'Vie'},h:'19:00',eu:'Buztina eta ardoa',es:'Barro y vino',cap:8,b:7,p:65},
+  {id:6,d:31,dw:{eu:'Lr',es:'Sáb'},h:'10:30',eu:'Sortu zure pieza',es:'Crea tu pieza',cap:6,b:1,p:65}],
+ myBook:new Set(),
+ kiln:{state:'run',type:'glaze',prog:.64,load:[2,9,10,15]},
+ kSel:new Set(),kType:'bisque',
+ reminded:new Set(),
+ feed:[
+  {ic:'🙋',eu:'Anek gaurko plaza askatu du',es:'Ane ha liberado su plaza de hoy',t:'—',hidden:true,key:'free'},
+  {ic:'📷',eu:'Garazik argazki bat igo du Txokora',es:'Garazi ha subido una foto al Txoko',t:'11:40'},
+  {ic:'🎟️',eu:'2 erreserba berri · Sortu zure pieza, urriak 24',es:'2 reservas nuevas · Crea tu pieza, 24 oct',t:'10:05'},
+  {ic:'🎨',eu:'Iratik «Ozeano urdina» aukeratu du bere kikararentzat',es:'Irati ha elegido «Azul océano» para su taza',t:'09:30'},
+  {ic:'🔁',eu:'Loreak plaza berreskuratu du gaur 17:30ean',es:'Lorea recupera clase hoy a las 17:30',t:'atzo'}],
+ badgesSeen:false
+};
+try{const l=localStorage.getItem('ore-lang');if(l==='eu'||l==='es')S.lang=l}catch(e){}
+if(location.hash==='#panela'||location.hash==='#panel')S.view='admin';
+
+/* ===== toast & confetti ===== */
+function toast(html){const t=$('#toast');if(!t)return;t.innerHTML=html;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2800)}
+function confetti(){const scr=$('.screen');if(!scr)return;const c=document.createElement('div');c.className='confetti';const cols=['#B5774F','#7E9A73','#CF9E4A','#3F6D8C','#E8D6C5'];for(let i=0;i<40;i++){const p=document.createElement('i');p.style.left=Math.random()*100+'%';p.style.background=cols[i%5];p.style.animationDelay=Math.random()*.4+'s';p.style.animationDuration=(1.2+Math.random()*1)+'s';c.appendChild(p)}scr.appendChild(c);setTimeout(()=>c.remove(),2600)}
+
+/* ===== STUDENT APP ===== */
+const mine=()=>S.pieces.filter(p=>p.o==='ane');
+const pname=p=>p[S.lang];
+const unread=()=>S.notifs.filter(n=>!n.read).length;
+function dots(st){return `<div class="dots">${[0,1,2,3,4].map(i=>`<i class="${st>=4&&i<=4?'ok':i<=st?'on':''}"></i>`).join('')}</div>`}
+function stChip(st){const c=st>=4?'ok':st===3?'warn':st===1?'clay':'sage';return `<span class="chip ${c}">${STG[S.lang][st]}</span>`}
+
+function vHome(){
+ const ready=mine().filter(p=>p.st===4);
+ const k=S.kiln, aneIn=k.load.some(id=>S.pieces.find(p=>p.id===id).o==='ane');
+ let cls;
+ if(!S.ane.freed){
+  cls=`<div class="card dark"><div class="row"><span class="lbl">${L('Hurrengo saioa','Próxima clase')}</span><span class="chip" style="background:rgba(255,255,255,.12);color:#fff">${L('Gaur','Hoy')}</span></div>
+  <div class="big">${L('Asteartea · 17:30–19:30','Martes · 17:30–19:30')}</div>
+  <div class="muted" style="font-size:.84rem">${L('Zure taldea · 5 lagun · Maddirekin','Tu grupo · 5 personas · con Maddi')}</div>
+  <div class="btns"><button class="btn light" id="b-go" data-act="go">${I.check} ${L('Joango naiz','Voy')}</button><button class="btn ghost" id="b-cant" data-act="cant" style="color:#fff">${L('Ezin naiz joan','No puedo ir')}</button></div></div>`;
+ }else if(!S.ane.rec){
+  cls=`<div class="card" style="background:var(--warn-soft)"><span class="lbl">${L('Gaurko saioa','Clase de hoy')}</span><div class="big" style="font-size:1.3rem">${L('Plaza askatu duzu. Beste norbaitek aprobetxa dezake 🙌','Has liberado tu plaza. Otra persona podrá aprovecharla 🙌')}</div>
+  <button class="btn" id="b-recov" data-act="sheet" data-v="recover">${L('Aukeratu noiz berreskuratu','Elige cuándo recuperar')}</button></div>`;
+ }else{
+  cls=`<div class="card" style="background:var(--ok-soft)"><div class="row"><span class="lbl" style="color:var(--ok)">${L('Berreskuratzea gordeta','Recuperación guardada')}</span><button class="btn sm ghost" id="b-undo" data-act="undo" style="color:var(--ok)">${L('Desegin','Deshacer')}</button></div><div class="big">${S.ane.rec}</div></div>`;
+ }
+ let kc='';
+ if(k.state==='run')kc=`<div class="card kiln"><div class="row"><div class="row" style="justify-content:flex-start"><div class="flame">${I.flame}</div><div><span class="lbl">${L('Labea piztuta','Horno encendido')}</span><div style="font-weight:700;font-size:.9rem">${k.type==='glaze'?L('Azken errekuntza','Cocción final'):L('Bizkotxo errekuntza','Cocción de bizcocho')}</div></div></div><span class="temp">${k.type==='glaze'?'1.240':'950'}°</span></div><div class="prog"><i style="width:${Math.round(k.prog*100)}%"></i></div><div class="row" style="font-size:.8rem"><span class="muted">${aneIn?L('Zure loreontzia barruan dago 🔥','Tu jarrón está dentro 🔥'):L('Asteko labea','Hornada de la semana')}</span><b>${L('Bihar goizean irekiko da','Se abre mañana por la mañana')}</b></div></div>`;
+ else if(k.state==='done')kc=`<div class="card kiln"><div class="row"><span class="lbl">${L('Labea hozten','Horno enfriando')}</span><span class="chip warn">${L('Laster irekiko da','Se abre pronto')}</span></div></div>`;
+ else kc=`<div class="card kiln"><div class="row"><span class="lbl">${L('Labea atseden','Horno en reposo')}</span><span class="muted" style="font-size:.8rem">${L('Hurrengoa: ostirala','Próxima: viernes')}</span></div></div>`;
+ const sp=S.posts.find(p=>p.star);
+ return `<div class="atop"><span class="wm">ORE</span><button class="ibtn" id="b-bell" data-act="sheet" data-v="notifs" aria-label="${L('Jakinarazpenak','Notificaciones')}">${I.bell}${unread()?`<i class="dot">${unread()}</i>`:''}</button></div>
+ <div class="pad">
+  <div class="hello"><span class="paren">(${L('asteartea, urriak 13','martes, 13 de octubre')})</span><h1>${L('Egun on, <em>Ane</em>','Buenos días, <em>Ane</em>')}</h1></div>
+  ${ready.map(p=>`<button class="ready shine" id="rd-${p.id}" data-act="piece" data-v="${p.id}">${PH(p.photo||U(p.img,200))}<div class="grow"><b>${L('Prest jasotzeko! 🎉','¡Lista para recoger! 🎉')}</b><small>${pname(p)} · ${L('Apala ','Estante ')}${p.shelf||'B · 3'}</small></div>${I.chev}</button>`).join('')}
+  ${cls}
+  ${kc}
+  <div class="card"><div class="note"><span class="av m">M</span><div><span class="lbl">${L('Maddiren oharra','Nota de Maddi')}</span><div style="font-size:.9rem;margin-top:3px">${L('Ostegunean esmalte berriak iritsiko dira: <b>Ozeano urdina</b> eta <b>Ezti horia</b>. Etorri probatzera! 🤍','El jueves llegan esmaltes nuevos: <b>Azul océano</b> y <b>Miel</b>. ¡Venid a probarlos! 🤍')}</div></div></div></div>
+  ${sp?`<button class="ptile" id="b-star" data-act="tab" data-v="txoko" style="background:var(--clay-soft)">${PH(sp.img)}<div class="grow"><span class="chip gold">⭐ ${L('Asteko pieza','Pieza de la semana')}</span><b>${sname(sp.a)} · ${esc([...sp.txt].slice(0,30).join(''))}…</b><span class="muted" style="font-size:.78rem">${Object.values(sp.r).reduce((a,b)=>a+b,0)} ${L('erreakzio · ikusi Txokoan','reacciones · ver en el Txoko')}</span></div></button>`:''}
+ </div>`;
+}
+function vPieces(){
+ const f=S.pf, list=mine().filter(p=>f==='all'||(f==='proc'&&p.st<4)||(f==='ready'&&p.st===4)||(f==='done'&&p.st===5));
+ const F=[['all',L('Guztiak','Todas')],['proc',L('Bidean','En proceso')],['ready',L('Prest','Listas')],['done',L('Jasota','Recogidas')]];
+ return `<div class="pad" style="padding-top:14px">
+ <div><span class="paren">(${L('nire piezak','mis piezas')})</span><div class="h1">${L('Zure eskuetatik,','De tus manos,')} <em>${mine().length} ${L('pieza','piezas')}</em></div></div>
+ <div class="filters">${F.map(([k,l])=>`<button id="pf-${k}" data-act="pf" data-v="${k}" aria-pressed="${f===k}">${l}</button>`).join('')}</div>
+ ${list.map(p=>`<button class="ptile" id="pt-${p.id}" data-act="piece" data-v="${p.id}">${PH(p.photo||U(p.img,220))}<div class="grow"><div class="row"><b>${pname(p)}</b>${stChip(p.st)}</div>${p.st<5?dots(p.st):''}<span class="muted" style="font-size:.76rem">${p.g?`<i class="sw" style="background:${gl(p.g).c}"></i> ${gl(p.g)[S.lang]}`:p.st===1?`<b style="color:var(--clay)">${L('Esmaltea aukeratzeko zain','Falta elegir esmalte')}</b>`:L('Esmaltea gero','Esmalte más adelante')}</span></div></button>`).join('')||`<p class="muted">${L('Ez dago piezarik hemen.','No hay piezas aquí.')}</p>`}
+ </div>`;
+}
+const DATES=['23/9','2/10','7/10','10/10','13/10','—'];
+function vDetail(){
+ const p=S.pieces.find(x=>x.id===S.detail);
+ const steps=[
+  [L('Modelatua eta lehortzen','Modelada y secando'),L('Astebete inguru, poliki','Una semana, sin prisa')],
+  [L('Bizkotxoa','Bizcocho'),L('1. errekuntza · 950 °C','1.ª cocción · 950 °C')],
+  [L('Esmaltatuta','Esmaltada'),p.g?gl(p.g)[S.lang]:L('Zuk aukeratzen duzu','Lo eliges tú')],
+  [L('Azken labea','Horno final'),L('2. errekuntza · 1.240 °C','2.ª cocción · 1.240 °C')],
+  [L('Prest jasotzeko','Lista para recoger'),p.shelf?L('Apala ','Estante ')+p.shelf:L('Abisua jasoko duzu','Te llegará un aviso')]];
+ const glazeDone=p.st===1&&p.g&&p.o==='ane'?`<div class="card" style="background:var(--ok-soft)"><div class="row"><span><i class="sw" style="background:${gl(p.g).c}"></i> <b>${gl(p.g)[S.lang]}</b></span><span class="chip ok">${L('Maddik badaki','Maddi ya lo sabe')}</span></div><span class="muted" style="font-size:.8rem">${L('Hurrengo saioan esmaltatuko duzu.','Lo esmaltarás en la próxima clase.')}</span></div>`:'';
+ const glazePick=p.st===1&&!p.g&&p.o==='ane'?`<div class="card" style="background:var(--clay-soft)"><span class="lbl" style="color:var(--clay)">${L('Zure txanda','Te toca')}</span><div style="font-weight:700">${L('Aukeratu esmaltea zure piezarentzat','Elige el esmalte para tu pieza')}</div><div class="glazes">${GL.map(g=>`<button class="gz" id="gz-${g.id}" data-act="glaze" data-v="${g.id}" aria-pressed="${S.sheetData.gz===g.id}"><i style="background:${g.c}"></i>${g[S.lang]}</button>`).join('')}</div><button class="btn clay" id="b-gsave" data-act="gsave" ${S.sheetData.gz?'':'disabled style="opacity:.45"'}>${L('Gorde · Maddik jasoko du','Guardar · le llega a Maddi')}</button></div>`:'';
+ return `<div class="hero">${PH(p.photo||U(p.img,800))}<button class="back" id="b-back" data-act="back" aria-label="${L('Atzera','Atrás')}">${I.back}</button><div class="cap"><span class="paren" style="color:#f2e6da">(${L('nire pieza','mi pieza')})</span><div class="h1">${pname(p)}</div></div></div>
+ <div class="pad" style="padding-top:16px">
+  <div class="row">${stChip(p.st)}<span class="muted" style="font-size:.8rem">${L('Hasiera: ','Empezada: ')}${DATES[0]}</span></div>
+  ${glazePick}${glazeDone}
+  <div class="tl">${steps.map((s,i)=>`<div class="st ${i<p.st||p.st>=4?'done':i===p.st?'now':''}"><span class="b">${i<p.st||p.st>=4?I.check:''}</span><div class="t"><b>${s[0]}</b><small>${s[1]}</small></div><span class="d">${i<=p.st?DATES[i+1>4?4:i]:'~'}</span></div>`).join('')}</div>
+  <div class="card"><div class="note"><span class="av m s">M</span><div style="font-size:.86rem"><span class="lbl">${L('Maddiren oharra','Nota de Maddi')}</span><br>${L('Oinarria polito geratu da. Hurrengoan hormak pixka bat mehetu eta arinagoa izango da 🙂','La base ha quedado bonita. La próxima vez afina un poco las paredes y pesará menos 🙂')}</div></div></div>
+  <label class="upl" for="up-piece" id="l-uppiece"><i>${I.cam}</i><div><b>${p.photo?L('Aldatu argazkia','Cambiar foto'):L('Igo zure argazkia','Sube tu foto')}</b><small>${L('Etxean nola geratu den erakutsi','Enseña cómo ha quedado en casa')}</small></div></label>
+  <button class="btn" id="b-share" data-act="sheet" data-v="compose" data-p="${p.id}">${I.heart} ${L('Partekatu Txokoan','Compartir en el Txoko')}</button>
+ </div>`;
+}
+const QUICK={eu:['Zoragarria! 😍','Nola lortu duzu kolore hori?','Hurrengoan erakutsi 🙏','Zorionak! 👏'],es:['¡Precioso! 😍','¿Cómo has sacado ese color?','¡Enséñame la próxima! 🙏','¡Enhorabuena! 👏']};
+function vTxoko(){
+ return `<div class="pad" style="padding-top:14px">
+ <div><span class="paren">(txokoa)</span><div class="h1">${L('Tailerreko <em>lanak</em>','Lo que sale <em>del taller</em>')}</div><p class="muted" style="margin:6px 0 0;font-size:.86rem">${L('Zure taldekideen piezak. Animatu elkar 🤎','Las piezas de tus compañeras. Daos ánimo 🤎')}</p></div>
+ <label class="upl" for="up-post" id="l-uppost"><i>${I.plus}</i><div><b>${L('Igo zure pieza','Sube tu pieza')}</b><small>${L('Argazki bat eta bi hitz, nahikoa','Una foto y dos palabras, suficiente')}</small></div></label>
+ ${S.posts.map(post).join('')}
+ </div>`;
+}
+function post(p){
+ const open=S.sheetData.openC===p.id;
+ const badge=p.star?`<span class="chip gold badge">⭐ ${L('Asteko pieza','Pieza de la semana')}</span>`:p.first?`<span class="chip clay badge">🎉 ${L('Lehen aldiz tornuan','Primera vez en el torno')}</span>`:p.new?`<span class="chip ok badge">${L('Berria','Nueva')}</span>`:'';
+ return `<article class="post" id="post-${p.id}"><div class="hd"><span class="av s ${p.a==='maddi'?'m':''}">${sname(p.a)[0]}</span><div><b>${sname(p.a)}</b><small>${p.t} · ${sgroup(p.a)}</small></div></div>
+ <div class="img">${PH(p.img)}${badge}</div>
+ <div class="bd"><div class="txt"><b>${sname(p.a)}</b> ${esc(p.txt)}</div>
+ <div class="reacts">${Object.keys(p.r).map(e=>`<button class="re" id="re-${p.id}-${[...e].length}${e.codePointAt(0)}" data-act="react" data-v="${p.id}" data-e="${e}" aria-pressed="${p.mine.has(e)}">${e}<small>${p.r[e]||''}</small></button>`).join('')}<button class="re" id="cm-${p.id}" data-act="openc" data-v="${p.id}">💬<small>${p.c.length}</small></button></div>
+ ${open?`<div class="cmts">${p.c.map(([w,t])=>`<div class="cm"><span class="av s ${w==='maddi'?'m':''}">${(w==='maddi'?'Maddi':sname(w))[0]}</span><div class="bub"><b>${w==='maddi'?'Maddi':sname(w)}</b> ${esc(t)}</div></div>`).join('')}
+ <div class="quick">${QUICK[S.lang].map((q,i)=>`<button id="q-${p.id}-${i}" data-act="quick" data-v="${p.id}" data-t="${esc(q)}">${q}</button>`).join('')}</div>
+ <form class="cin" data-form="cmt" data-v="${p.id}"><input id="ci-${p.id}" placeholder="${L('Idatzi zerbait polita…','Escribe algo bonito…')}" autocomplete="off"><button aria-label="${L('Bidali','Enviar')}">${I.send}</button></form></div>`:''}
+ </div></article>`;
+}
+function vCal(){
+ const days=[];for(let i=0;i<3;i++)days.push('');for(let d=1;d<=31;d++)days.push(d);
+ const myDays=[6,13,20,27];
+ const DW=S.lang==='eu'?['Al','Ar','Az','Og','Or','Lr','Ig']:['L','M','X','J','V','S','D'];
+ return `<div class="pad" style="padding-top:14px">
+ <div><span class="paren">(${L('egutegia','calendario')})</span><div class="h1">${L('Urria','Octubre')} <em>2026</em></div></div>
+ <div class="card"><div class="cal">${DW.map(d=>`<div class="dw">${d}</div>`).join('')}${days.map(d=>{if(!d)return '<div></div>';const ws=S.workshops.find(w=>w.d===d);return `<div class="dd ${d===13?'today':d<13?'past':''}">${d}<span class="m">${myDays.includes(d)?'<i style="background:var(--clay)"></i>':''}${ws?'<i style="background:var(--sage)"></i>':''}${d===15&&S.ane.rec&&S.ane.rec.includes('15')?'<i style="background:var(--ok)"></i>':''}</span></div>`}).join('')}</div>
+ <div class="row" style="justify-content:flex-start;gap:14px;font-size:.74rem;color:var(--muted)"><span><i class="sw" style="background:var(--clay);width:9px;height:9px"></i> ${L('Zure saioak','Tus clases')}</span><span><i class="sw" style="background:var(--sage);width:9px;height:9px"></i> ${L('Tailerrak','Talleres')}</span></div></div>
+ <button class="gift" id="b-gift" data-act="sheet" data-v="gift"><span class="bow">🎁</span><div><b>${L('Oparitu tailer bat','Regala un taller')}</b><small>${L('Lagun batentzat, urtebetetze baterako… zuk aukeratu','Para una amiga, un cumpleaños… tú eliges')}</small></div></button>
+ <span class="lbl">${L('Urriko tailerrak','Talleres de octubre')}</span>
+ ${S.workshops.map(w=>{const full=w.b>=w.cap,booked=S.myBook.has(w.id);return `<div class="ws"><div class="date"><small>${w.dw[S.lang]}</small><b>${w.d}</b></div><div class="grow"><b>${w[S.lang]}</b><small>${w.h} · ${w.p} € · ${full?L('Beteta','Completo'):(w.cap-w.b)+' '+L('plaza libre','plazas libres')}</small><div class="seats">${Array.from({length:w.cap},(_,i)=>`<i class="${i<w.b?'':'free'}"></i>`).join('')}</div></div>${booked?`<span class="chip ok">${I.check.replace('<svg','<svg width="12" height="12"')} ${L('Zurea','Tuya')}</span>`:full?`<button class="btn sm ghost" id="wl-${w.id}" data-act="waitlist" data-v="${w.id}">${L('Itxaron','Lista')}</button>`:`<button class="btn sm" id="bk-${w.id}" data-act="sheet" data-v="book" data-w="${w.id}">${L('Erreserbatu','Reservar')}</button>`}</div>`}).join('')}
+ </div>`;
+}
+function vMe(){
+ const B=[['🥣',L('Lehen katilua','Primer cuenco'),1],['🌀',L('Tornuan lehen aldiz','Primera vez en el torno'),1],['🔟',L('10 pieza','10 piezas'),1],['⭐',L('Txokoko izarra','Estrella del Txoko'),0],['🔥',L('10 aste jarraian','10 semanas seguidas'),0],['🎨',L('6 esmalte probatuta','6 esmaltes probados'),0],['🎁',L('Oparia egina','Regalo hecho'),0],['🌙',L('Ilargi zuria maisua','Maestra del blanco luna'),0]];
+ return `<div class="pad" style="padding-top:14px">
+ <div class="row" style="justify-content:flex-start;gap:14px"><span class="av" style="width:64px;height:64px;font-size:1.4rem">A</span><div><div class="h1" style="font-size:1.9rem">Ane Etxeberria</div><span class="muted" style="font-size:.84rem">${L('Ikaslea 2025eko irailetik · Asteartea 17:30','Alumna desde septiembre 2025 · Martes 17:30')}</span></div></div>
+ <div class="stats"><div class="stat"><b>34</b><small>${L('saio','clases')}</small></div><div class="stat"><b>11</b><small>${L('pieza','piezas')}</small></div><div class="stat"><b>6🔥</b><small>${L('aste jarraian','semanas seguidas')}</small></div></div>
+ <span class="lbl">${L('Lorpenak','Logros')}</span>
+ <div class="badges">${B.map(([e,t,on])=>`<div class="bdg ${on?'':'lock'}"><i>${e}</i>${t}</div>`).join('')}</div>
+ <div class="card"><div class="row"><span class="lbl">${L('Urriko kuota','Cuota de octubre')}</span><span class="chip ok">${L('Ordainduta','Pagada')}</span></div><div class="row"><span class="big">80 €</span><span class="muted" style="font-size:.8rem;text-align:right">${L('4 saio · materiala eta errekuntzak barne','4 clases · material y cocciones incluidos')}</span></div><div class="muted" style="font-size:.8rem">${L('Hurrengoa: azaroaren 1ean, helbideratuta','Próxima: 1 de noviembre, domiciliada')}</div></div>
+ <div class="card" style="gap:0"><div class="set"><span>${L('Piezak prest daudenean abisatu','Avisar cuando mis piezas estén listas')}</span><button class="tg" id="tg1" data-act="tg" aria-pressed="true"></button></div><div class="set"><span>${L('Txokoko erreakzioak','Reacciones en el Txoko')}</span><button class="tg" id="tg2" data-act="tg" aria-pressed="true"></button></div><div class="set"><span>${L('Plaza libreak nire taldean','Plazas libres en mi grupo')}</span><button class="tg" id="tg3" data-act="tg" aria-pressed="false"></button></div><div class="set"><span>${L('Hizkuntza','Idioma')}</span><b>${L('Euskara','Castellano')}</b></div></div>
+ </div>`;
+}
+function sheet(){
+ const k=S.sheet;if(!k)return '';
+ let h='';
+ if(k==='notifs'){h=`<h2>${L('Jakinarazpenak','Notificaciones')}</h2><div>${S.notifs.map(n=>`<div class="nt"><span class="ic">${n.ic}</span><div class="grow">${n[S.lang]}<small>${n.t}</small></div>${n.read?'':'<i class="sw" style="background:var(--clay);width:9px;height:9px;flex:none;margin-top:6px"></i>'}</div>`).join('')}</div>`}
+ if(k==='recover'){const o=[[L('Osteguna, urriak 15 · 10:30','Jueves 15 oct · 10:30'),L('1 plaza libre','1 plaza libre')],[L('Asteartea, urriak 20 · 17:30','Martes 20 oct · 17:30'),L('Zure taldea · 1 plaza','Tu grupo · 1 plaza')],[L('Asteartea, urriak 20 · 10:30','Martes 20 oct · 10:30'),L('Beteta','Completo'),1]];
+  h=`<h2>${L('Noiz berreskuratu nahi duzu?','¿Cuándo quieres recuperar?')}</h2><p class="muted" style="margin:0;font-size:.86rem">${L('Hutsune bat duten taldeak bakarrik agertzen dira.','Solo aparecen los grupos con hueco.')}</p>${o.map((x,i)=>`<button class="opt" id="ro-${i}" data-act="rec" data-v="${x[0]}" ${x[2]?'disabled':''}><span>${x[0]}<small>${x[1]}</small></span>${x[2]?'':I.chev.replace('<svg','<svg width="18" height="18"')}</button>`).join('')}`}
+ if(k==='book'){const w=S.workshops.find(x=>x.id===+S.sheetData.w);h=`<h2>${w[S.lang]}</h2><div class="ws" style="background:var(--sand)"><div class="date"><small>${w.dw[S.lang]}</small><b>${w.d}</b></div><div class="grow"><b>${L('Urriak ','Octubre ')}${w.d} · ${w.h}</b><small>${L('2 ordu · materiala eta errekuntza barne','2 horas · material y cocción incluidos')}</small></div></div>
+  <div class="row"><span>${L('Plazak','Plazas')}</span><div class="btns" style="flex:none;align-items:center;gap:12px"><button class="ibtn" id="bq-m" data-act="qty" data-v="-1">−</button><b style="font-size:1.2rem">${S.sheetData.q||1}</b><button class="ibtn" id="bq-p" data-act="qty" data-v="1">+</button></div></div>
+  <div class="row"><span class="muted">${L('Guztira','Total')}</span><span class="big">${(S.sheetData.q||1)*w.p} €</span></div><button class="btn clay" id="b-book" data-act="book" data-v="${w.id}">${L('Erreserbatu eta ordaindu','Reservar y pagar')}</button><span class="muted" style="font-size:.74rem;text-align:center">${L('Demoa: ez da ordainketarik egiten','Demo: no se realiza ningún pago')}</span>`}
+ if(k==='gift'){const d=S.sheetData;h=`<h2>${L('Oparitu tailer bat','Regala un taller')}</h2>
+  <div class="gcard"><span class="wm">ORE</span><span class="paren">(${L('opari-txartela','tarjeta regalo')})</span><div class="big">${L('Sortu zure pieza','Crea tu pieza')}</div><div style="font-size:.9rem">${L('Norentzat','Para')}: <b>${esc(d.to||'Miren')}</b></div><div style="font-size:.86rem;font-style:italic">“${esc(d.msg||L('Zorionak! Buztina zikintzeko ordua da 🤎','¡Felicidades! Toca mancharse las manos 🤎'))}”</div><div style="font-size:.78rem" class="muted">65 € · ${L('6 hilabeteko epea','válida 6 meses')}</div></div>
+  <label class="field">${L('Norentzat','Para quién')}<input id="g-to" data-in="to" value="${esc(d.to||'')}" placeholder="Miren"></label>
+  <label class="field">${L('Mezua','Mensaje')}<textarea id="g-msg" data-in="msg" rows="2" placeholder="${L('Zorionak! Buztina zikintzeko ordua da 🤎','¡Felicidades! Toca mancharse las manos 🤎')}">${esc(d.msg||'')}</textarea></label>
+  <button class="btn clay" id="b-gsend" data-act="gsend">🎁 ${L('Bidali oparia','Enviar regalo')}</button>`}
+ if(k==='compose'){const d=S.sheetData;h=`<h2>${L('Partekatu Txokoan','Compartir en el Txoko')}</h2><div class="ph" style="aspect-ratio:1/1;border-radius:20px;overflow:hidden">${d.img?`<img src="${d.img}" alt="">`:''}</div>
+  <label class="field">${L('Bi hitz zure piezari buruz','Dos palabras sobre tu pieza')}<textarea id="c-txt" data-in="txt" rows="2" placeholder="${L('Nire lehen loreontzia! Iratze berdearekin 🌿','¡Mi primer jarrón! Con verde helecho 🌿')}">${esc(d.txt||'')}</textarea></label>
+  <button class="btn clay" id="b-pub" data-act="publish">${L('Argitaratu','Publicar')}</button>`}
+ return `<div class="scrim" data-act="close"></div><div class="sheet" role="dialog"><span class="grab"></span>${h}</div>`;
+}
+function renderApp(){
+ const tabs=[['home',I.home,L('Hasiera','Inicio')],['pieces',I.bowl,L('Piezak','Piezas')],['txoko',I.heart,'Txokoa'],['cal',I.cal,L('Egutegia','Agenda')],['me',I.user,L('Ni','Yo')]];
+ const body=S.detail?vDetail():{home:vHome,pieces:vPieces,txoko:vTxoko,cal:vCal,me:vMe}[S.tab]();
+ const sc=$('#abody');const keep=sc?sc.scrollTop:0;
+ $('#device').className='device phone';
+ $('#device').innerHTML=`<div class="island"></div><div class="screen"><div class="sbar"><span>9:41</span><span class="sig">●●● <i></i></span></div><div class="abody" id="abody">${body}</div>
+ <nav class="tabbar" role="tablist">${tabs.map(([k,ic,l])=>`<button role="tab" id="tb-${k}" data-act="tab" data-v="${k}" aria-selected="${!S.detail&&S.tab===k}">${ic}<span>${l}</span>${k==='txoko'&&S.posts.some(p=>p.new)?'':''}</button>`).join('')}</nav>${sheet()}<div class="toast" id="toast" role="status"></div></div>`;
+ if(render.keepScroll)$('#abody').scrollTop=keep;
+}
+
+/* ===== ADMIN PANEL ===== */
+function aToday(){
+ const g1=STUD.filter(s=>s.g==='a1'), g2=STUD.filter(s=>s.g==='a2');
+ const readyN=S.pieces.filter(p=>p.st===4).length, proc=S.pieces.filter(p=>p.st<4).length, pend=STUD.filter(s=>s.fee==='pending'&&!S.reminded.has(s.id)).length;
+ const row=(s,gi)=>{const key=gi+s.id,abs=s.id==='ane'&&S.ane.freed;return `<div class="li"><span class="av s">${s.name[0]}</span><div class="grow">${s.name}${abs?` <span class="chip warn">${L('ez dator','no viene')}</span>`:''}</div>${abs?'':`<button class="ck" id="ck-${key}" data-act="att" data-v="${key}" aria-pressed="${!!S.att[key]}" aria-label="${s.name}">${I.check}</button>`}</div>`};
+ const feed=S.feed.filter(f=>!f.hidden||(f.key==='free'&&S.ane.freed));
+ return `<div class="ahead"><div><span class="paren">(${L('asteartea, urriak 13','martes, 13 de octubre')})</span><div class="h1">${L('Kaixo, <em>Maddi</em>','Hola, <em>Maddi</em>')}</div></div><button class="btn clay" id="a-ig" data-act="amodal" data-v="ig">${I.spark} ${L('Instagramerako egutegia','Calendario para Instagram')}</button></div>
+ <div class="kpis"><div class="kpi"><b>21<small>/24</small></b><span>${L('Plaza beteta asteko taldeetan','Plazas ocupadas en los grupos')}</span></div><div class="kpi"><b>${proc}</b><span>${L('Pieza bidean','Piezas en proceso')}</span></div><div class="kpi ok"><b>${readyN}</b><span>${L('Prest, jasotzeko zain','Listas, por recoger')}</span></div><div class="kpi ${pend?'warn':''}"><b>${pend}</b><span>${L('Kuota ordaintzeko','Cuotas pendientes')}</span></div></div>
+ <div class="cols"><div class="cols3" style="grid-template-columns:1fr 1fr">
+  <div class="panel"><div class="row"><h3>10:30 · ${L('Helduak','Adultos')}</h3><span class="chip clay">6/6</span></div>${g1.map(s=>row(s,'a')).join('')}</div>
+  <div class="panel"><div class="row"><h3>17:30 · ${L('Helduak','Adultos')}</h3><span class="chip clay">${S.ane.freed?5:5}/6 + 1</span></div>${g2.map(s=>row(s,'b')).join('')}<div class="li"><span class="av s" style="background:var(--sage-soft);color:var(--sage)">L</span><div class="grow">Lorea <span class="chip sage">${L('berreskuratzea','recupera')}</span></div><button class="ck" id="ck-blorea" data-act="att" data-v="blorea" aria-pressed="${!!S.att.blorea}">${I.check}</button></div></div>
+ </div>
+ <div class="panel feed"><h3>${L('Azken mugimenduak','Últimos movimientos')}</h3>${feed.map(f=>`<div class="li"><span class="fi">${f.ic}</span><div class="grow">${f[S.lang]}<small>${f.key==='free'?L('orain','ahora'):f.t}</small></div></div>`).join('')}</div></div>`;
+}
+function aPieces(){
+ const cols=[0,1,2,3,4];
+ const n=S.sel.size, st=n?S.pieces.find(p=>S.sel.has(p.id)).st:null;
+ return `<div class="ahead"><div><span class="paren">(${L('piezak','piezas')})</span><div class="h1">${L('Pieza bakoitza, <em>bere bidean</em>','Cada pieza, <em>en su punto</em>')}</div></div><span class="muted" style="font-size:.84rem">${L('Sakatu piezak eta mugitu fasez batera','Toca las piezas y muévelas de fase a la vez')}</span></div>
+ <div class="kan">${cols.map(c=>{const list=S.pieces.filter(p=>p.st===c);return `<div class="kcol"><div class="kh"><span>${STG[S.lang][c]}</span><small>${list.length}</small></div>${list.map(p=>`<button class="kc" id="kc-${p.id}" data-act="asel" data-v="${p.id}" aria-pressed="${S.sel.has(p.id)}">${PH(p.photo||U(p.img,120))}<div class="grow"><b>${pname(p)}</b><small>${sname(p.o)}${p.ws?' · '+L('tailerra','taller'):''}${p.g?` <i class="sw" style="background:${gl(p.g).c};width:10px;height:10px"></i>`:''}${c===1&&!p.g?` · <span style="color:var(--clay)">${L('esmaltea?','¿esmalte?')}</span>`:''}${p.shelf?' · '+p.shelf:''}</small></div></button>`).join('')}</div>`}).join('')}</div>
+ ${n?`<div class="actionbar"><span>${n} ${L('pieza aukeratuta','piezas seleccionadas')}</span><div class="btns" style="flex:none"><button class="btn sm light" id="a-clear" data-act="aclear">${L('Garbitu','Quitar')}</button><button class="btn sm clay" id="a-move" data-act="amove">${st>=4?L('Jasota ✓','Recogidas ✓'):L('Hurrengo fasera →','Siguiente fase →')} ${st<4?STG[S.lang][st+1]:''}</button></div></div>`:''}`;
+}
+function aKiln(){
+ const k=S.kiln;
+ const loaded=k.load.map(id=>S.pieces.find(p=>p.id===id));
+ const slots=Array.from({length:18},(_,i)=>loaded[i]);
+ const kilnBox=(items,on)=>`<div class="kilnv ${on?'on':''}"><div class="row"><div><span class="lbl" style="color:#cdb8a6">${on?L('Martxan','En marcha'):k.state==='done'?L('Amaituta · hozten','Terminada · enfriando'):L('Prestatzen','Preparando')}</span><div style="font-weight:700">${(k.state==='idle'?S.kType:k.type)==='glaze'?L('Azken errekuntza','Cocción final'):L('Bizkotxo errekuntza','Cocción de bizcocho')}</div></div><span class="temp">${(k.state==='idle'?S.kType:k.type)==='glaze'?'1.240':'950'}°</span></div>
+  ${[0,1,2].map(r=>`<div class="shelf">${items.slice(r*6,r*6+6).map(p=>`<div class="slot">${p?PH(p.photo||U(p.img,100)):''}</div>`).join('')}</div>`).join('')}
+  ${on?`<div class="prog" style="background:rgba(255,255,255,.15);position:relative;z-index:1"><i style="width:${Math.round(k.prog*100)}%"></i></div><div class="row" style="font-size:.82rem"><span>${Math.round(k.prog*100)} %</span><span>${L('≈ 6 h falta · bihar 08:00etan ireki','≈ 6 h · abrir mañana a las 08:00')}</span></div>`:''}</div>`;
+ if(k.state!=='idle'){
+  return `<div class="ahead"><div><span class="paren">(${L('labea','horno')})</span><div class="h1">${L('Asteko <em>labekada</em>','La <em>hornada</em> de la semana')}</div></div></div>
+  <div class="cols" style="grid-template-columns:1.1fr 1fr">${kilnBox(slots,k.state==='run')}
+  <div class="panel"><h3>${L('Barruan','Dentro')} · ${loaded.length} ${L('pieza','piezas')}</h3>${loaded.map(p=>`<div class="li"><div class="ph" style="width:38px;height:38px;border-radius:10px;overflow:hidden;flex:none">${p.photo?`<img src="${p.photo}" alt="">`:`<img src="${U(p.img,100)}" alt="" onerror="this.remove()">`}</div><div class="grow"><b style="font-weight:600">${pname(p)}</b> · ${sname(p.o)}</div>${p.g?`<i class="sw" style="background:${gl(p.g).c}"></i>`:''}</div>`).join('')}
+  ${k.state==='run'?`<button class="btn" id="k-finish" data-act="kfinish">${L('Amaitu errekuntza (demoa)','Terminar cocción (demo)')}</button>`:`<button class="btn clay" id="k-open" data-act="kopen">${L('Ireki labea eta abisatu jabeei','Abrir el horno y avisar a las dueñas')}</button>`}
+  <span class="muted" style="font-size:.78rem">${L('Ireki ondoren, pieza bakoitzaren jabeak abisua jasotzen du mugikorrean, apala eta guzti.','Al abrir, cada dueña recibe el aviso en el móvil, con el estante incluido.')}</span></div></div>`;
+ }
+ const cand=S.pieces.filter(p=>S.kType==='bisque'?p.st===0:p.st===2);
+ const sel=cand.filter(p=>S.kSel.has(p.id));
+ return `<div class="ahead"><div><span class="paren">(${L('labea','horno')})</span><div class="h1">${L('Prestatu <em>hurrengo labekada</em>','Prepara la <em>próxima hornada</em>')}</div></div><div class="typeseg"><button id="kt-b" data-act="ktype" data-v="bisque" aria-pressed="${S.kType==='bisque'}">${L('Bizkotxoa · 950°','Bizcocho · 950°')}</button><button id="kt-g" data-act="ktype" data-v="glaze" aria-pressed="${S.kType==='glaze'}">${L('Azkena · 1.240°','Final · 1.240°')}</button></div></div>
+ <div class="cols" style="grid-template-columns:1.1fr 1fr">${kilnBox(Array.from({length:18},(_,i)=>sel[i]),false)}
+ <div class="panel"><div class="row"><h3>${L('Sartzeko prest','Listas para entrar')} · ${cand.length}</h3><span class="chip clay">${sel.length}/18 ${L('toki','huecos')}</span></div>${cand.map(p=>`<button class="kc" id="ks-${p.id}" data-act="ksel" data-v="${p.id}" aria-pressed="${S.kSel.has(p.id)}" style="background:var(--sand)">${PH(p.photo||U(p.img,100))}<div class="grow"><b>${pname(p)}</b><small>${sname(p.o)}${p.g?` · <i class="sw" style="background:${gl(p.g).c};width:10px;height:10px"></i> ${gl(p.g)[S.lang]}`:''}</small></div></button>`).join('')||`<p class="muted">${L('Ez dago piezarik fase honetan.','No hay piezas en esta fase.')}</p>`}
+ <button class="btn clay" id="k-start" data-act="kstart" ${sel.length?'':'disabled style="opacity:.45"'}>${I.flame} ${L('Piztu labea','Encender el horno')}</button></div></div>`;
+}
+function aStudents(){
+ return `<div class="ahead"><div><span class="paren">(${L('ikasleak','alumnas')})</span><div class="h1">${L('Taldeak eta <em>ikasleak</em>','Grupos y <em>alumnas</em>')}</div></div><span class="chip warn">${L('2 itxaron-zerrendan · Asteartea 10:30','2 en lista de espera · Martes 10:30')}</span></div>
+ <div class="groups">${GROUPS.map(g=>{const st=STUD.filter(s=>s.g===g.id);const rec=g.id==='a2'?1:0;return `<div class="grp"><b>${g[S.lang]}</b><div class="sd">${st.map(s=>`<i title="${s.name}">${s.name[0]}</i>`).join('')}${rec?'<i class="rec">L</i>':''}${Array.from({length:Math.max(0,6-st.length-rec)},()=>'<i class="free"></i>').join('')}</div><span class="muted" style="font-size:.78rem">${st.length}/6${g.kids?' · 70 €':' · 80 €'}${g.id==='a2'&&S.ane.freed?' · '+L('Ane ez dator gaur','Ane no viene hoy'):''}</span></div>`}).join('')}</div>
+ <div class="panel" style="padding:6px 6px 0"><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>${L('Izena','Nombre')}</th><th>${L('Taldea','Grupo')}</th><th>${L('Asistentzia','Asistencia')}</th><th class="hide-s">${L('Piezak','Piezas')}</th><th>${L('Kuota','Cuota')}</th></tr></thead><tbody>${STUD.slice(0,12).map(s=>`<tr><td><b style="font-weight:600">${s.name}</b></td><td class="muted">${GROUPS.find(g=>g.id===s.g)[S.lang]}</td><td><div class="meter"><div class="prog sage"><i style="width:${s.att}%"></i></div><span class="n" style="font-size:.78rem">${s.att}%</span></div></td><td class="hide-s n">${S.pieces.filter(p=>p.o===s.id).length}</td><td>${s.fee==='paid'?`<span class="chip ok">${L('Ordainduta','Pagada')}</span>`:`<span class="chip warn">${L('Zain','Pendiente')}</span>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function aFees(){
+ const pend=STUD.filter(s=>s.fee==='pending');
+ const paid=STUD.length-pend.length;
+ const M=[['Eka',1480],['Ira',1550],['Urr',1630]];
+ return `<div class="ahead"><div><span class="paren">(${L('kuotak','cuotas')})</span><div class="h1">${L('Urria, <em>begirada batean</em>','Octubre, <em>de un vistazo</em>')}</div></div></div>
+ <div class="kpis"><div class="kpi ok"><b>${paid}<small>/${STUD.length}</small></b><span>${L('Ordainduta','Pagadas')}</span></div><div class="kpi"><b>1.630 €</b><span>${L('Hileko diru-sarrera finkoa','Ingreso fijo del mes')}</span></div><div class="kpi"><b>3</b><span>${L('Plaza libre → 240 € gehiago','Plazas libres → 240 € más')}</span></div><div class="kpi"><b>2</b><span>${L('Itxaron-zerrendan','En lista de espera')}</span></div></div>
+ <div class="cols"><div class="panel"><h3>${L('Ordaintzeko zain','Pendientes de pago')}</h3>${pend.map(s=>`<div class="li"><span class="av s">${s.name[0]}</span><div class="grow"><b style="font-weight:600">${s.name}</b> · 80 €<br><small class="muted">${L('Helbideratzea itzulita · urriak 2','Domiciliación devuelta · 2 oct')}</small></div><button class="btn sm ${S.reminded.has(s.id)?'ghost':''}" id="rm-${s.id}" data-act="remind" data-v="${s.id}">${S.reminded.has(s.id)?L('Bidalita ✓','Enviado ✓'):L('Gogorarazi','Recordar')}</button></div>`).join('')}<span class="muted" style="font-size:.78rem">${L('Gogorarazpena atsegina da eta ordaintzeko esteka darama.','El recordatorio es amable y lleva el enlace de pago.')}</span></div>
+ <div class="panel"><h3>${L('Asteko ikastaroak · azken hilabeteak','Cursos semanales · últimos meses')}</h3><div class="bars">${M.map(([m,v],i)=>`<div class="bc ${i===2?'cur':''}"><b>${v.toLocaleString('de-DE')} €</b><i style="height:${v/1700*110}px"></i><small>${S.lang==='eu'?m:['Jun','Sep','Oct'][i]}</small></div>`).join('')}</div></div></div>`;
+}
+function aWs(){
+ return `<div class="ahead"><div><span class="paren">(${L('tailerrak','talleres')})</span><div class="h1">${L('Urriko <em>tailerrak</em>','Talleres de <em>octubre</em>')}</div></div><button class="btn clay" id="a-ig2" data-act="amodal" data-v="ig">${I.spark} ${L('Sortu Instagramerako irudia','Crear imagen para Instagram')}</button></div>
+ <div class="cols"><div class="panel wslist">${S.workshops.map(w=>`<div class="ws"><div class="date"><small>${w.dw[S.lang]}</small><b>${w.d}</b></div><div class="grow"><b>${w[S.lang]} · ${w.h}</b><small>${w.b}/${w.cap} ${L('plaza','plazas')} · ${w.b*w.p} €</small><div class="seats">${Array.from({length:w.cap},(_,i)=>`<i class="${i<w.b?'':'free'}"></i>`).join('')}</div></div>${w.b>=w.cap?`<span class="chip warn">${L('Beteta','Completo')}</span>`:w.cap-w.b===1?`<span class="chip clay">${L('Azken plaza','Última plaza')}</span>`:''}</div>`).join('')}</div>
+ <div class="panel"><h3>${L('Data berria, segundo batean','Nueva fecha, en un segundo')}</h3><p class="muted" style="margin:0;font-size:.84rem">${L('Ez da zerbitzu bat data bakoitzeko sortu behar: data, ordua eta plazak, eta kito. Ikasleen app-ean berehala agertzen da.','No hace falta crear un servicio por fecha: día, hora y plazas, y listo. Aparece al momento en la app de alumnas.')}</p>
+ <form class="addrow" data-form="addws"><label class="field">${L('Eguna','Día')}<input id="w-d" type="number" min="1" max="31" value="27"></label><label class="field">${L('Ordua','Hora')}<input id="w-h" value="18:00"></label><label class="field">${L('Plazak','Plazas')}<input id="w-c" type="number" min="1" max="12" value="6"></label><button class="btn" style="flex:none">${I.plus} ${L('Gehitu','Añadir')}</button></form></div></div>`;
+}
+function aTxoko(){
+ return `<div class="ahead"><div><span class="paren">(txokoa)</span><div class="h1">${L('Komunitatea <em>bizirik</em>','La comunidad, <em>viva</em>')}</div></div><span class="muted" style="font-size:.84rem">${L('Aukeratu asteko pieza: ikasle guztiei agertzen zaie hasieran','Elige la pieza de la semana: les sale a todas en el inicio')}</span></div>
+ <div class="cgrid">${S.posts.map(p=>`<div class="cpost"><div class="ph">${p.img.startsWith('data:')?`<img src="${p.img}" alt="">`:`<img src="${p.img}" alt="" onerror="this.remove()">`}${p.star?`<span class="chip gold">⭐ ${L('Asteko pieza','Pieza de la semana')}</span>`:''}</div><div class="bd"><b>${sname(p.a)}</b><span>${esc(p.txt)}</span><div class="rx">${Object.entries(p.r).filter(([e,n])=>n).map(([e,n])=>`<span>${e} ${n}</span>`).join('')}<span>💬 ${p.c.length}</span></div><button class="btn sm ${p.star?'ghost':''}" id="st-${p.id}" data-act="star" data-v="${p.id}">⭐ ${p.star?L('Asteko pieza da','Es la de la semana'):L('Asteko pieza egin','Hacer pieza de la semana')}</button></div></div>`).join('')}</div>`;
+}
+function amodal(){
+ if(S.modal!=='ig')return '';
+ const ws=S.workshops;
+ return `<div class="modal" data-act="mclose"><div class="box" data-stop="1"><div class="row"><h3 style="margin:0">${L('Instagramerako irudia, automatikoki','Imagen para Instagram, automática')}</h3><button class="btn sm ghost" id="m-close" data-act="mclose">${L('Itxi','Cerrar')}</button></div>
+ <div class="row" style="align-items:flex-start;gap:20px;flex-wrap:wrap"><div class="igpost"><span class="wm">ORE</span><span class="t">${L('Urriko<br>tailerrak','Talleres<br>de octubre')}</span><div class="gl">${ws.map(w=>`<b>${w.d}</b><span>${w[S.lang]}</span><span>${w.h}${w.b>=w.cap?' · '+L('beteta','completo'):''}</span>`).join('')}</div><span class="ft">${L('Erreserbak app-ean · plaza mugatuak 🤎','Reservas en la app · plazas limitadas 🤎')}</span></div>
+ <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px"><p style="margin:0">${L('Tailerren datak aldatzen diren bakoitzean, irudia bere kabuz eguneratzen da, marka berarekin.','Cada vez que cambian las fechas, la imagen se actualiza sola, con la misma estética.')}</p><p class="muted" style="margin:0;font-size:.86rem">${L('Hilero eskuz egiten zen lana, orain segundo bat.','Lo que antes era trabajo manual cada mes, ahora es un segundo.')}</p><button class="btn clay" id="m-dl" data-act="igdl">${L('Gorde irudia','Guardar imagen')}</button></div></div></div></div>`;
+}
+function renderAdmin(){
+ const nav=[['today',I.home,L('Gaur','Hoy')],['pieces',I.bowl,L('Piezak','Piezas')],['kiln',I.kiln,L('Labea','Horno')],['students',I.users,L('Ikasleak','Alumnas')],['fees',I.euro,L('Kuotak','Cuotas')],['ws',I.cal,L('Tailerrak','Talleres')],['txoko',I.heart,'Txokoa']];
+ const view={today:aToday,pieces:aPieces,kiln:aKiln,students:aStudents,fees:aFees,ws:aWs,txoko:aTxoko}[S.atab]();
+ const d=$('#device');d.className='device tablet';
+ const m=$('#amain');const keep=m?m.scrollTop:0;
+ d.innerHTML=`<span class="cam"></span><div class="screen" id="tscreen" style="width:${dims.aw}px;height:${dims.ah}px"><div class="adm"><nav class="side-nav" role="tablist"><span class="wm">ORE</span>${nav.map(([k,ic,l])=>`<button role="tab" id="an-${k}" data-act="atab" data-v="${k}" aria-selected="${S.atab===k}">${ic}<span>${l}</span>${k==='pieces'&&S.pieces.filter(p=>p.st===1&&!p.g).length?'':''}${k==='today'&&S.ane.freed?'<i class="cnt">1</i>':''}</button>`).join('')}<div class="me"><span class="av m">M</span><div><b>Maddi</b><small>${L('Tailerraren jabea','Dueña del taller')}</small></div></div></nav><div class="amain" id="amain">${view}</div></div>${amodal()}<div class="toast" id="toast" role="status"></div></div>`;
+ if(render.keepScroll)$('#amain').scrollTop=keep;
+}
+
+/* ===== shell ===== */
+const dims={aw:1180,ah:740};
+function sides(){
+ const l=$('#side-l'),r=$('#side-r');
+ if(S.view==='app'){
+  const T=[['🏺','ready',L('Pieza bat prest dago','Una pieza está lista')],['🙋','cant',L('Ezin naiz joan → berreskuratu','No puedo ir → recuperar')],['🎨','glaze',L('Aukeratu esmaltea','Elegir esmalte')],['📷','txoko',L('Igo pieza bat Txokora','Subir una pieza al Txoko')],['🤎','react',L('Erreakzionatu eta iruzkindu','Reaccionar y comentar')],['🎁','gift',L('Oparitu tailer bat','Regalar un taller')],['🏅','me',L('Lorpenak eta kuota','Logros y cuota')]];
+  l.innerHTML=`<span class="paren">(${L('ikasleen app-a','la app de alumnas')})</span><h3>${L('Proba ezazu','Pruébala')}</h3><div class="tries">${T.map(([e,k,t])=>`<button class="try" id="tr-${k}" data-act="try" data-v="${k}"><i>${e}</i>${t}</button>`).join('')}</div>`;
+  r.innerHTML=`<span class="paren">(${L('zergatik','por qué')})</span><h3>${L('Ikasleek maite dutena, zuk behar duzuna','Lo que ellas disfrutan, lo que tú necesitas')}</h3><ul class="points"><li><span class="n">i</span><div><b>${L('«Prest al dago nire pieza?» gehiago ez','Se acabó el «¿está ya mi pieza?»')}</b><span>${L('Abisua bere kabuz iristen da, apala eta guzti.','El aviso llega solo, con el estante incluido.')}</span></div></li><li><span class="n">ii</span><div><b>${L('Plaza hutsik ez','Ninguna plaza vacía')}</b><span>${L('Faltatzen duenak askatzen du; besteak berreskuratzen du.','Quien falta la libera; otra la recupera.')}</span></div></li><li><span class="n">iii</span><div><b>${L('Komunitatea','Comunidad')}</b><span>${L('Txokoan elkar animatzen dira, eta zure lana zabaltzen da.','En el Txoko se animan entre ellas y tu trabajo se ve.')}</span></div></li></ul><div class="sync">${I.link}<span>${L('Bi bistak lotuta daude: hemen egiten duzuna panelean agertzen da.','Las dos vistas están conectadas: lo que hagas aquí aparece en el panel.')}</span></div>`;
+  l.hidden=false;r.hidden=false;
+ }else{l.hidden=true;r.hidden=true}
+}
+function fit(){
+ const vw=window.innerWidth,vh=window.innerHeight,bar=$('#bar').offsetHeight;
+ document.documentElement.style.setProperty('--hh',bar+'px');
+ const nofr=vw<700;document.body.classList.toggle('nofr',nofr);
+ const portrait=vh>vw;
+ const nw=portrait?860:1180, nh=portrait?Math.min(1080,Math.round((vh-bar-40)/ ((vw-40)/(nw+40)) )-40):740;
+ if(S.view==='admin'&&!nofr&&(dims.aw!==nw||dims.ah!==Math.max(640,nh))){dims.aw=nw;dims.ah=Math.max(640,nh);render()}
+ const dev=$('#device'),wrap=$('#fit');
+ if(nofr){wrap.style.width='';wrap.style.height='';dev.style.transform='';return}
+ const W=S.view==='app'?414:dims.aw+40,H=S.view==='app'?868:dims.ah+40;
+ const sideW=S.view==='app'?($('#side-l').offsetWidth+($('#side-r').offsetParent?$('#side-r').offsetWidth:0)+72):0;
+ const s=Math.min(1,(vh-bar-30)/H,(vw-44-sideW)/W);
+ wrap.style.width=W*s+'px';wrap.style.height=H*s+'px';dev.style.transform=`scale(${s})`;
+}
+function render(){
+ document.documentElement.lang=S.lang;
+ $('#t-sub').textContent=L('(zeramika tailerra · demoa)','(taller de cerámica · demo)');
+ $('#t-vapp').textContent=L('Ikasleen app-a','App de alumnas');
+ $('#t-vadm').textContent=L('Tailerraren panela','Panel del taller');
+ $('#t-by').textContent=L('Proposamena:','Propuesta de');
+ $('#t-foot').textContent=L('Demoa · izenak eta datuak asmatuak · argazkiak: Unsplash','Demo · nombres y datos inventados · fotos: Unsplash');
+ document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===S.view));
+ document.querySelectorAll('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===S.lang));
+ sides();
+ S.view==='app'?renderApp():renderAdmin();
+ render.keepScroll=false;
+}
+
+/* ===== actions ===== */
+function soft(){render.keepScroll=true;render()}
+function notifyAne(ic,eu,es){S.notifs.unshift({ic,eu,es,t:L('orain','ahora'),read:false})}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-act],[data-view],[data-lang]');if(!b)return;
+ if(b.dataset.stop&&!e.target.closest('[data-act]'))return;
+ if(b.dataset.view){S.view=b.dataset.view;S.sheet=null;S.modal=null;history.replaceState(null,'',S.view==='admin'?'#panela':'#app');render();fit();return}
+ if(b.dataset.lang){S.lang=b.dataset.lang;try{localStorage.setItem('ore-lang',S.lang)}catch(_){}soft();return}
+ const a=b.dataset.act,v=b.dataset.v;
+ switch(a){
+  case 'tab':S.tab=v;S.detail=null;S.sheet=null;S.sheetData={};render();break;
+  case 'piece':S.detail=+v;S.sheetData={};render();break;
+  case 'back':S.detail=null;render();break;
+  case 'pf':S.pf=v;soft();break;
+  case 'sheet':S.sheet=v;S.sheetData={...S.sheetData,w:b.dataset.w,q:1};if(v==='notifs'){soft();S.notifs.forEach(n=>n.read=true)}else if(v==='compose'){const p=S.pieces.find(x=>x.id===+b.dataset.p);S.sheetData.img=p.photo||U(p.img,700);S.sheetData.pid=p.id;soft()}else soft();break;
+  case 'close':S.sheet=null;soft();break;
+  case 'go':toast('🤎 '+L('Ikusi arte! Mantala ez ahaztu','¡Nos vemos! No olvides el delantal'));break;
+  case 'cant':S.ane.freed=true;soft();toast(L('Plaza askatuta · Maddik jakingo du','Plaza liberada · Maddi lo sabrá'));break;
+  case 'rec':S.ane.rec=v;S.sheet=null;soft();toast('✓ '+L('Berreskuratzea gordeta','Recuperación guardada'));break;
+  case 'undo':S.ane={freed:false,rec:null};soft();break;
+  case 'glaze':S.sheetData.gz=v;soft();break;
+  case 'gsave':{const p=S.pieces.find(x=>x.id===S.detail);p.g=S.sheetData.gz;S.sheetData={};S.feed.unshift({ic:'🎨',eu:`Anek «${gl(p.g).eu}» aukeratu du bere ${p.eu.toLowerCase()}rentzat`,es:`Ane ha elegido «${gl(p.g).es}» para su ${p.es.toLowerCase()}`,t:L('orain','ahora')});soft();toast(`<i class="sw" style="background:${gl(p.g).c}"></i> ${L('Esmaltea gordeta · Maddik badaki','Esmalte guardado · Maddi ya lo sabe')}`);break}
+  case 'react':{const p=S.posts.find(x=>x.id===+v),em=b.dataset.e;if(p.mine.has(em)){p.mine.delete(em);p.r[em]--}else{p.mine.add(em);p.r[em]=(p.r[em]||0)+1}soft();const nb=document.querySelector(`[data-act="react"][data-v="${v}"][data-e="${em}"]`);if(nb){nb.classList.add('pop')}break}
+  case 'openc':S.sheetData.openC=S.sheetData.openC===+v?null:+v;soft();break;
+  case 'quick':{const p=S.posts.find(x=>x.id===+v);p.c.push(['ane',b.dataset.t]);soft();toast('💬 '+L('Iruzkina bidalita','Comentario enviado'));break}
+  case 'waitlist':toast('🔔 '+L('Itxaron-zerrendan zaude. Plaza bat libratzen bada, abisatuko dizugu.','Estás en la lista. Si se libera una plaza, te avisamos.'));break;
+  case 'qty':{const w=S.workshops.find(x=>x.id===+S.sheetData.w);S.sheetData.q=Math.max(1,Math.min(w.cap-w.b,(S.sheetData.q||1)+ +v));soft();break}
+  case 'book':{const w=S.workshops.find(x=>x.id===+v);w.b+=S.sheetData.q||1;S.myBook.add(w.id);S.sheet=null;S.feed.unshift({ic:'🎟️',eu:`Erreserba berria · ${w.eu}, urriak ${w.d}`,es:`Reserva nueva · ${w.es}, ${w.d} oct`,t:L('orain','ahora')});soft();confetti();toast('🎟️ '+L('Erreserbatuta! Ikusi arte','¡Reservado! Nos vemos'));break}
+  case 'gsend':S.sheet=null;soft();confetti();toast('🎁 '+L(`Oparia bidalita · ${esc(S.sheetData.to||'Miren')}`,`Regalo enviado a ${esc(S.sheetData.to||'Miren')}`));S.sheetData={};break;
+  case 'publish':{const d=S.sheetData;S.posts.unshift({id:Date.now(),a:'ane',img:d.img,txt:d.txt||L('Nire azken pieza 🤎','Mi última pieza 🤎'),t:L('orain','ahora'),new:true,r:{'🤎':0,'✨':0,'👏':0,'😍':0,'🔥':0},mine:new Set(),c:[]});S.feed.unshift({ic:'📷',eu:'Anek pieza bat igo du Txokora',es:'Ane ha subido una pieza al Txoko',t:L('orain','ahora')});S.sheet=null;S.detail=null;S.tab='txoko';S.sheetData={};render();confetti();toast('🤎 '+L('Argitaratuta! Zure taldekideek laster ikusiko dute','¡Publicado! Tus compañeras lo verán enseguida'));
+   const np=S.posts[0];setTimeout(()=>{np.r['🤎']=1;np.c.push(['maddi',L('Ze polita, Ane! 👏','¡Qué bonita, Ane! 👏')]);if(S.view==='app'&&S.tab==='txoko'){soft();toast('🤎 '+L('Maddik erreakzionatu du','Maddi ha reaccionado'))}},2600);break}
+  case 'tg':b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');break;
+  case 'try':doTry(v);break;
+  /* admin */
+  case 'atab':S.atab=v;S.sel.clear();S.modal=null;render();break;
+  case 'att':S.att[v]=!S.att[v];b.setAttribute('aria-pressed',S.att[v]);break;
+  case 'asel':{const id=+v,p=S.pieces.find(x=>x.id===id);if(S.sel.size&&S.pieces.find(x=>S.sel.has(x.id)).st!==p.st)S.sel.clear();S.sel.has(id)?S.sel.delete(id):S.sel.add(id);soft();break}
+  case 'aclear':S.sel.clear();soft();break;
+  case 'amove':{const ps=S.pieces.filter(p=>S.sel.has(p.id));const to=Math.min(5,ps[0].st+1);const shelves=['B · 1','B · 2','C · 1','C · 2','C · 3','C · 4'];ps.forEach((p,i)=>{p.st=to;if(to===4){p.shelf=shelves[i%6];if(p.o==='ane')notifyAne('🏺',`Zure ${p.eu.toLowerCase()} prest dago · apala ${p.shelf}`,`Lista para recoger: ${p.es} · estante ${p.shelf}`)}});S.sel.clear();soft();toast(to===4?`📲 ${ps.length} ${L('abisu bidalita:','avisos enviados:')} ${[...new Set(ps.map(p=>sname(p.o)))].join(', ')}`:`${ps.length} ${L('pieza →','piezas →')} ${STG[S.lang][to]}`);break}
+  case 'kfinish':{if(S.kiln.state!=='run'||S.kiln.anim)break;S.kiln.anim=true;const t=setInterval(()=>{S.kiln.prog=Math.min(1,S.kiln.prog+.08);if(S.kiln.prog>=1){clearInterval(t);S.kiln.state='done';S.kiln.anim=false}if(S.view==='admin'&&S.atab==='kiln')soft()},90);break}
+  case 'kopen':{const k=S.kiln,ps=k.load.map(id=>S.pieces.find(p=>p.id===id));const to=k.type==='glaze'?4:1;const sh=['A · 2','A · 3','B · 3','B · 4','C · 1','C · 2'];ps.forEach((p,i)=>{p.st=to;if(to===4){p.shelf=p.shelf||sh[i%6];if(p.o==='ane')notifyAne('🏺',`Zure ${p.eu.toLowerCase()} prest dago · apala ${p.shelf}`,`Lista para recoger: ${p.es} · estante ${p.shelf}`)}else if(p.o==='ane')notifyAne('🎨',`Zure ${p.eu.toLowerCase()} bizkotxoa da: aukeratu esmaltea`,`${p.es}: ya es bizcocho, elige esmalte`)});S.kiln={state:'idle',type:k.type,prog:0,load:[]};S.kSel.clear();soft();toast(`📲 ${ps.length} ${L('abisu bidalita:','avisos enviados:')} ${[...new Set(ps.map(p=>sname(p.o)))].join(', ')}`);break}
+  case 'ktype':S.kType=v;S.kSel.clear();soft();break;
+  case 'ksel':{const id=+v;S.kSel.has(id)?S.kSel.delete(id):S.kSel.size<18&&S.kSel.add(id);soft();break}
+  case 'kstart':{const ids=[...S.kSel];if(!ids.length)break;if(S.kType==='glaze')ids.forEach(id=>S.pieces.find(p=>p.id===id).st=3);S.kiln={state:'run',type:S.kType,prog:.03,load:ids};S.kSel.clear();soft();toast('🔥 '+L('Labea piztuta · ikasleek mugikorrean ikusten dute','Horno encendido · las alumnas lo ven en el móvil'));break}
+  case 'remind':S.reminded.add(v);soft();toast('📨 '+L(`Gogorarazpena bidalita ${sname(v)}ri`,`Recordatorio enviado a ${sname(v)}`));break;
+  case 'star':S.posts.forEach(p=>p.star=p.id===+v);soft();toast('⭐ '+L('Asteko pieza aldatuta · ikasle guztiek ikusiko dute','Pieza de la semana cambiada · la verán todas'));break;
+  case 'amodal':S.modal=v;soft();break;
+  case 'mclose':if(e.target.closest('[data-stop]')&&b.dataset.act!=='mclose'&&!e.target.closest('#m-close'))break;if(e.target.closest('.box')&&!e.target.closest('#m-close'))break;S.modal=null;soft();break;
+  case 'igdl':toast('✓ '+L('Irudia prest (demoa)','Imagen lista (demo)'));break;
+ }
+});
+document.addEventListener('submit',e=>{
+ const f=e.target.closest('[data-form]');if(!f)return;e.preventDefault();
+ if(f.dataset.form==='cmt'){const inp=f.querySelector('input');const t=inp.value.trim();if(!t)return;S.posts.find(x=>x.id===+f.dataset.v).c.push(['ane',t]);soft();toast('💬 '+L('Iruzkina bidalita','Comentario enviado'))}
+ if(f.dataset.form==='addws'){const d=+$('#w-d').value,h=$('#w-h').value||'18:00',c=+$('#w-c').value||6;if(!d||d<1||d>31)return;const dt=new Date(2026,9,d).getDay();const dwE=['Ig','Al','Ar','Az','Og','Or','Lr'][dt],dwS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][dt];S.workshops.push({id:Date.now(),d,dw:{eu:dwE,es:dwS},h,eu:'Sortu zure pieza',es:'Crea tu pieza',cap:c,b:0,p:65});S.workshops.sort((a,b)=>a.d-b.d);soft();toast('✓ '+L(`Urriak ${d} gehituta · ikasleen app-ean dago jada`,`${d} de octubre añadido · ya está en la app de alumnas`))}
+});
+document.addEventListener('input',e=>{const k=e.target.dataset&&e.target.dataset.in;if(k){S.sheetData[k]=e.target.value;if(S.sheet==='gift'){const c=$('.gcard');if(c){const tmp=S.sheetData;c.querySelectorAll('div')[1].innerHTML=`${L('Norentzat','Para')}: <b>${esc(tmp.to||'Miren')}</b>`;c.querySelectorAll('div')[2].textContent=`“${tmp.msg||L('Zorionak! Buztina zikintzeko ordua da 🤎','¡Felicidades! Toca mancharse las manos 🤎')}”`}}}});
+function readImg(file,cb){if(!file)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),m=900,sc=Math.min(1,m/Math.max(im.width,im.height));c.width=im.width*sc;c.height=im.height*sc;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.82))};im.src=r.result};r.readAsDataURL(file)}
+$('#up-post').addEventListener('change',e=>{readImg(e.target.files[0],url=>{S.sheet='compose';S.sheetData={img:url};if(S.view!=='app'){S.view='app'}soft()});e.target.value=''});
+$('#up-piece').addEventListener('change',e=>{readImg(e.target.files[0],url=>{const p=S.pieces.find(x=>x.id===S.detail);if(p){p.photo=url;soft();toast('📷 '+L('Argazkia gordeta','Foto guardada'))}});e.target.value=''});
+function doTry(k){
+ S.sheet=null;S.sheetData={};S.detail=null;
+ if(k==='ready'){S.tab='home';let p=mine().find(x=>x.st===4);if(!p){p=S.pieces.find(x=>x.id===1);p.st=4}S.detail=p.id;render();confetti()}
+ else if(k==='cant'){S.tab='home';S.ane={freed:true,rec:null};S.sheet='recover';render()}
+ else if(k==='glaze'){let p=mine().find(x=>x.st===1&&!x.g);if(!p){p=S.pieces.find(x=>x.id===3);p.st=1;p.g=null}S.detail=p.id;render();const sc=$('#abody');if(sc)sc.scrollTop=250}
+ else if(k==='txoko'){S.tab='txoko';render();$('#up-post').click()}
+ else if(k==='react'){S.tab='txoko';S.sheetData={openC:S.posts[0].id};render()}
+ else if(k==='gift'){S.tab='cal';S.sheet='gift';render()}
+ else if(k==='me'){S.tab='me';render()}
+}
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(fit,80)});
+render();fit();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+setTimeout(()=>{if(S.view==='app'&&S.tab==='home')confetti()},700);
+</script>
+</body>
+</html>
